@@ -1,0 +1,580 @@
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+export type SupportedLanguage = 'he' | 'en' | 'ru' | 'es' | 'pt' | 'fr';
+
+export interface LanguageInfo {
+  code: SupportedLanguage;
+  name: string;
+  flag: string;
+  dir: 'rtl' | 'ltr';
+}
+
+export const LANGUAGES: LanguageInfo[] = [
+  { code: 'he', name: 'עברית', flag: '🇮🇱', dir: 'rtl' },
+  { code: 'en', name: 'English', flag: '🇺🇸', dir: 'ltr' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺', dir: 'ltr' },
+  { code: 'es', name: 'Español', flag: '🇪🇸', dir: 'ltr' },
+  { code: 'pt', name: 'Português', flag: '🇧🇷', dir: 'ltr' },
+  { code: 'fr', name: 'Français', flag: '🇫🇷', dir: 'ltr' },
+];
+
+export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
+  he: {
+    appTitle: 'המסע לבית המקדש',
+    appSubTitle: 'חוויית עולים לרגל בבית המקדש השני',
+    priestTitle: 'עזריה הכהן',
+    priestCompanion: 'מדריך המסע',
+    priestRole: 'מלווה ומדריך מקדש',
+    selectLanguage: 'בחר שפה',
+    coins: 'מטבעות',
+    stars: 'כוכבי חכמה',
+    backpack: 'תרמיל',
+    codex: 'ספר ההלכות',
+    badges: 'עיטורים',
+    chapter: 'פרק',
+    nextChapter: 'המשך לפרק הבא',
+    previousChapter: 'חזור לפרק הקודם',
+    close: 'סגור',
+    whyCoins: 'למה משמשים המטבעות?',
+    learningRank: 'דרגת הלמידה',
+    adviceAndGuide: 'עצות והנחיות',
+    halakhaFact: 'דבר הלכה מעזריה הכהן',
+    continueJourney: 'תודה עזריה! נמשיך במסע',
+    achievements: 'הישגים ועיטורים',
+    backpackItems: 'חפצים בתרמיל המסע',
+    codexTitle: 'אנציקלופדיית בית המקדש והלכות רגלים',
+    bonusQuiz: 'שאלת בונוס הלכתית',
+    correct: 'נכון מאוד!',
+    incorrect: 'לא מדויק, נסה שנית!',
+    audioPlaying: '🔊 מנגן ושר את השיר בקול...',
+    playSong: '🔊 השמע את השיר בנגינה ושירה בפועל 🎵',
+    
+    // Backpack Modal
+    backpackTitle: 'תרמיל המסע',
+    backpackSubTitle: 'ציוד וחפצים שנאספו בדרך לירושלים',
+    maaserPurse: 'ארנק מעשר שני',
+    silverCoins: 'מטבעות כסף',
+    holyRedemption: 'פדיון קודש',
+    closeBackpack: 'סגור תרמיל',
+
+    // Badges Modal
+    badgesTitle: 'עיטורי והישגי המסע',
+    badgesSubTitle: 'אותות כבוד על ביצוע מצוות העלייה לרגל',
+    badgesUnlocked: 'עיטורים שהושגו',
+    wisdomStars: 'כוכבי חכמה',
+    starsCount: 'כוכבים',
+    chapterNumLabel: 'פרק',
+    closeBadges: 'סגור',
+
+    // DevTools Modal
+    devToolsTitle: 'סרגל פיתוח ובדיקת המשחק (Dev Mode)',
+    devToolsSubTitle: 'מעבר חופשי בין שלבים, דילוג על משימות ובדיקת רכיבים',
+    devToolsLocked: 'נעול - נדרשת סיסמת מפתח',
+    passwordPrompt: 'גישה למצב פיתוח מוגנת בסיסמה',
+    passwordSub: 'אנא הכנס את סיסמת המפתח כדי לפתוח את כלי הפיתוח והבדיקות.',
+    passwordPlaceholder: 'הכנס סיסמא...',
+    enterDevBar: 'כניסה לסרגל פיתוח 🔑',
+    wrongPassword: 'סיסמה שגויה! הגישה מורשית למפתחים בלבד.',
+    jumpChapters: 'דילוג ומעבר ישיר בין הפרקים',
+    skipTasks: 'דילוג על משימות ופתיחת שלבים',
+    completeChapterTasks: 'השלם משימות פרק',
+    completeAndOpenNext: 'ופתח את הבא',
+    completeAllGame: 'השלם את כל 6 הפרקים (חגיגת ניצחון)',
+    resourcesAndCodex: 'משאבים וספר ההלכות',
+    add100Coins: '+100 מטבעות',
+    add100Stars: '+100 כוכבים',
+    unlockCodex: 'פתח ספר הלכות',
+    unlockBadges: 'פתח כל העיטורים',
+    resetGameProgress: 'אפס את כל התקדמות המשחק',
+    closeDev: 'סגור חלון פיתוח',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: 'אתגרי רשות הלכתיים - בונוס!',
+    optionalTag: 'רשות! לא חובה למעבר',
+    bonusQuizDesc: 'שאלות מתוך ספרי ההלכה - תשובות נכונות מעניקות בונוס מטבעות וכוכבים!',
+    earnedBonus: 'בונוס שנצבר',
+    question: 'שאלה',
+    outOf: 'מתוך',
+    correctBonusMsg: 'נכון! קיבלת +10 מטבעות ו-+10 כוכבים!',
+    answeredBonusCount: 'ענית על',
+    bonusQuestionsCount: 'שאלות הבונוס בפרק זה',
+
+    // Tasks & Navigation
+    mission: 'משימה',
+    taskCompleted: 'הושלם!',
+    tasksCompleted: 'משימות הושלמו',
+    progressInChapter: 'התקדמות בפרק',
+    nextChapterBtn: 'צא לדרך!',
+  },
+  en: {
+    appTitle: 'Journey to the Temple',
+    appSubTitle: 'Second Temple Pilgrimage Experience',
+    priestTitle: 'Azariah the Priest',
+    priestCompanion: 'Journey Guide',
+    priestRole: 'Temple Companion & Guide',
+    selectLanguage: 'Select Language',
+    coins: 'Coins',
+    stars: 'Wisdom Stars',
+    backpack: 'Backpack',
+    codex: 'Law Codex',
+    badges: 'Badges',
+    chapter: 'Chapter',
+    nextChapter: 'Proceed to Next Chapter',
+    previousChapter: 'Return to Previous Chapter',
+    close: 'Close',
+    whyCoins: 'What are Coins used for?',
+    learningRank: 'Wisdom Rank',
+    adviceAndGuide: 'Advice & Guidance',
+    halakhaFact: 'Halachic Fact from Azariah the Priest',
+    continueJourney: 'Thank you Azariah! Let\'s continue',
+    achievements: 'Achievements & Badges',
+    backpackItems: 'Backpack Gear',
+    codexTitle: 'Temple & Festival Law Codex',
+    bonusQuiz: 'Halachic Bonus Question',
+    correct: 'Spot on!',
+    incorrect: 'Not quite, try again!',
+    audioPlaying: '🔊 Playing melody & singing aloud...',
+    playSong: '🔊 Play song & melody aloud 🎵',
+
+    // Backpack Modal
+    backpackTitle: 'Travel Backpack',
+    backpackSubTitle: 'Gear & items collected on the way to Jerusalem',
+    maaserPurse: 'Second Tithe Purse',
+    silverCoins: 'Silver Coins',
+    holyRedemption: 'Sacred Redemption',
+    closeBackpack: 'Close Backpack',
+
+    // Badges Modal
+    badgesTitle: 'Journey Badges & Achievements',
+    badgesSubTitle: 'Honors awarded for fulfilling pilgrimage commandments',
+    badgesUnlocked: 'Badges Unlocked',
+    wisdomStars: 'Wisdom Stars',
+    starsCount: 'Stars',
+    chapterNumLabel: 'Chapter',
+    closeBadges: 'Close',
+
+    // DevTools Modal
+    devToolsTitle: 'Developer & QA Toolbar (Dev Mode)',
+    devToolsSubTitle: 'Jump chapters, skip tasks & inspect components freely',
+    devToolsLocked: 'Locked - Developer password required',
+    passwordPrompt: 'Dev Mode Access Protected',
+    passwordSub: 'Please enter developer password to access tools and testing.',
+    passwordPlaceholder: 'Enter password...',
+    enterDevBar: 'Enter Dev Toolbar 🔑',
+    wrongPassword: 'Incorrect password! Access reserved for developers.',
+    jumpChapters: 'Direct Chapter Jump',
+    skipTasks: 'Task Skips & Unlocks',
+    completeChapterTasks: 'Complete Chapter Tasks',
+    completeAndOpenNext: 'and unlock next',
+    completeAllGame: 'Complete all 6 Chapters (Victory Celebration)',
+    resourcesAndCodex: 'Resources & Law Codex',
+    add100Coins: '+100 Coins',
+    add100Stars: '+100 Stars',
+    unlockCodex: 'Unlock Full Codex',
+    unlockBadges: 'Unlock All Badges',
+    resetGameProgress: 'Reset Entire Game Progress',
+    closeDev: 'Close Dev Window',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: 'Optional Halachic Bonus Challenges!',
+    optionalTag: 'Optional! Not required',
+    bonusQuizDesc: 'Questions from Halachic codices - correct answers award bonus coins & stars!',
+    earnedBonus: 'Bonus Earned',
+    question: 'Question',
+    outOf: 'out of',
+    correctBonusMsg: 'Correct! You earned +10 coins and +10 stars!',
+    answeredBonusCount: 'Answered',
+    bonusQuestionsCount: 'bonus questions in this chapter',
+
+    // Tasks & Navigation
+    mission: 'Task',
+    taskCompleted: 'Completed!',
+    tasksCompleted: 'tasks completed',
+    progressInChapter: 'Chapter Progress',
+    nextChapterBtn: 'Onwards to Journey!',
+  },
+  ru: {
+    appTitle: 'Путешествие в Иерусалимский Храм',
+    appSubTitle: 'Опыт паломников Второго Храма',
+    priestTitle: 'Священник Азария',
+    priestCompanion: 'Путеводитель',
+    priestRole: 'Храмовый гид и наставник',
+    selectLanguage: 'Выберите язык',
+    coins: 'Монеты',
+    stars: 'Звезды мудрости',
+    backpack: 'Рюкзак',
+    codex: 'Кодекс Законов',
+    badges: 'Значки',
+    chapter: 'Глава',
+    nextChapter: 'Перейти к следующей главе',
+    previousChapter: 'Вернуться к предыдущей главе',
+    close: 'Закрыть',
+    whyCoins: 'Зачем нужны монеты?',
+    learningRank: 'Ранг Мудрости',
+    adviceAndGuide: 'Советы и Наставления',
+    halakhaFact: 'Закон Галахи от Священника Азарии',
+    continueJourney: 'Спасибо, Азария! Продолжаем путь',
+    achievements: 'Достижения и Значки',
+    backpackItems: 'Предметы в Рюкзаке',
+    codexTitle: 'Энциклопедия Храма и Праздничных Законов',
+    bonusQuiz: 'Бонусный вопрос по Галахе',
+    correct: 'Совершенно верно!',
+    incorrect: 'Не совсем так, попробуйте еще раз!',
+    audioPlaying: '🔊 Звучит мелодия и пение...',
+    playSong: '🔊 Включить песню и мелодию 🎵',
+
+    // Backpack Modal
+    backpackTitle: 'Дорожный Рюкзак',
+    backpackSubTitle: 'Снаряжение, собранное по пути в Иерусалим',
+    maaserPurse: 'Кошелек Второй Десятины',
+    silverCoins: 'Серебряные Монеты',
+    holyRedemption: 'Святое Выкупление',
+    closeBackpack: 'Закрыть Рюкзак',
+
+    // Badges Modal
+    badgesTitle: 'Награды и Значки Путешествия',
+    badgesSubTitle: 'Почетные знаки за исполнение заповедей паломничества',
+    badgesUnlocked: 'Получено Значков',
+    wisdomStars: 'Звезды Мудрости',
+    starsCount: 'Звезд',
+    chapterNumLabel: 'Глава',
+    closeBadges: 'Закрыть',
+
+    // DevTools Modal
+    devToolsTitle: 'Панель Разработчика (Dev Mode)',
+    devToolsSubTitle: 'Свободный переход между главами и пропуск заданий',
+    devToolsLocked: 'Заблокировано - требуется пароль',
+    passwordPrompt: 'Доступ к Режиму Разработчика',
+    passwordSub: 'Введите пароль разработчика для доступа к инструментам.',
+    passwordPlaceholder: 'Введите пароль...',
+    enterDevBar: 'Войти в Панель 🔑',
+    wrongPassword: 'Неверный пароль!',
+    jumpChapters: 'Переход по главам',
+    skipTasks: 'Пропуск заданий',
+    completeChapterTasks: 'Завершить задания главы',
+    completeAndOpenNext: 'и открыть следующую',
+    completeAllGame: 'Завершить все 6 глав (Празднование Победы)',
+    resourcesAndCodex: 'Ресурсы и Кодекс',
+    add100Coins: '+100 Монет',
+    add100Stars: '+100 Звезд',
+    unlockCodex: 'Открыть Кодекс',
+    unlockBadges: 'Открыть Значки',
+    resetGameProgress: 'Сбросить Прогресс Игры',
+    closeDev: 'Закрыть Панель',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: 'Дополнительные Бонусные Задания!',
+    optionalTag: 'Необязательно!',
+    bonusQuizDesc: 'Вопросы из книг Галахи - верные ответы дают бонусные монеты и звезды!',
+    earnedBonus: 'Получено Бонусов',
+    question: 'Вопрос',
+    outOf: 'из',
+    correctBonusMsg: 'Верно! Вы получили +10 монет и +10 звезд!',
+    answeredBonusCount: 'Отвечено на',
+    bonusQuestionsCount: 'бонусных вопросов в этой главе',
+
+    // Tasks & Navigation
+    mission: 'Задание',
+    taskCompleted: 'Выполнено!',
+    tasksCompleted: 'заданий выполнено',
+    progressInChapter: 'Прогресс в главе',
+    nextChapterBtn: 'Вперед по пути!',
+  },
+  es: {
+    appTitle: 'Viaje al Templo de Jerusalén',
+    appSubTitle: 'Experiencia de Peregrinación del Segundo Templo',
+    priestTitle: 'Azarías el Sacerdote',
+    priestCompanion: 'Guía de Viaje',
+    priestRole: 'Acompañante y Guía del Templo',
+    selectLanguage: 'Seleccionar Idioma',
+    coins: 'Monedas',
+    stars: 'Estrellas de Sabiduría',
+    backpack: 'Mochila',
+    codex: 'Códice de Leyes',
+    badges: 'Insignias',
+    chapter: 'Capítulo',
+    nextChapter: 'Avanzar al Siguiente Capítulo',
+    previousChapter: 'Volver al Capítulo Anterior',
+    close: 'Cerrar',
+    whyCoins: '¿Para qué sirven las monedas?',
+    learningRank: 'Rango de Sabiduría',
+    adviceAndGuide: 'Consejos y Guía',
+    halakhaFact: 'Dato de Jalajá por Azarías el Sacerdote',
+    continueJourney: '¡Gracias Azarías! Continuemos',
+    achievements: 'Logros e Insignias',
+    backpackItems: 'Objetos en la Mochila',
+    codexTitle: 'Códice de Leyes del Templo y Fiestas',
+    bonusQuiz: 'Pregunta Extra de Jalajá',
+    correct: '¡Correcto!',
+    incorrect: 'No exactamente, ¡inténtalo de nuevo!',
+    audioPlaying: '🔊 Reproduciendo melodía y canto...',
+    playSong: '🔊 Reproducir canción y melodía 🎵',
+
+    // Backpack Modal
+    backpackTitle: 'Mochila de Viaje',
+    backpackSubTitle: 'Equipo y objetos recolectados camino a Jerusalén',
+    maaserPurse: 'Monedero del Segundo Diezmo',
+    silverCoins: 'Monedas de Plata',
+    holyRedemption: 'Redención Sagrada',
+    closeBackpack: 'Cerrar Mochila',
+
+    // Badges Modal
+    badgesTitle: 'Insignias y Logros del Viaje',
+    badgesSubTitle: 'Honores por cumplir los preceptos de peregrinación',
+    badgesUnlocked: 'Insignias Desbloqueadas',
+    wisdomStars: 'Estrellas de Sabiduría',
+    starsCount: 'Estrellas',
+    chapterNumLabel: 'Capítulo',
+    closeBadges: 'Cerrar',
+
+    // DevTools Modal
+    devToolsTitle: 'Barra de Desarrollo (Dev Mode)',
+    devToolsSubTitle: 'Salto entre capítulos y pruebas de componentes',
+    devToolsLocked: 'Bloqueado - Se requiere contraseña',
+    passwordPrompt: 'Acceso Modo Desarrollo',
+    passwordSub: 'Ingrese la contraseña de desarrollador.',
+    passwordPlaceholder: 'Contraseña...',
+    enterDevBar: 'Entrar a Barra Dev 🔑',
+    wrongPassword: '¡Contraseña incorrecta!',
+    jumpChapters: 'Salto directo de capítulo',
+    skipTasks: 'Omitir tareas',
+    completeChapterTasks: 'Completar tareas del capítulo',
+    completeAndOpenNext: 'y abrir el siguiente',
+    completeAllGame: 'Completar los 6 capítulos (Celebración de Victoria)',
+    resourcesAndCodex: 'Recursos y Códice',
+    add100Coins: '+100 Monedas',
+    add100Stars: '+100 Estrellas',
+    unlockCodex: 'Desbloquear Códice',
+    unlockBadges: 'Desbloquear Insignias',
+    resetGameProgress: 'Reiniciar Progreso del Juego',
+    closeDev: 'Cerrar Desarrollo',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: '¡Desafíos Extras de Jalajá!',
+    optionalTag: '¡Opcional!',
+    bonusQuizDesc: 'Preguntas de textos de Jalajá: ¡las respuestas correctas otorgan monedas y estrellas extra!',
+    earnedBonus: 'Bono Ganado',
+    question: 'Pregunta',
+    outOf: 'de',
+    correctBonusMsg: '¡Correcto! ¡Ganaste +10 monedas y +10 estrellas!',
+    answeredBonusCount: 'Respondidas',
+    bonusQuestionsCount: 'preguntas extra en este capítulo',
+
+    // Tasks & Navigation
+    mission: 'Tarea',
+    taskCompleted: '¡Completado!',
+    tasksCompleted: 'tareas completadas',
+    progressInChapter: 'Progreso del Capítulo',
+    nextChapterBtn: '¡Adelante en el camino!',
+  },
+  pt: {
+    appTitle: 'Jornada ao Templo de Jerusalém',
+    appSubTitle: 'Experiência de Peregrinação do Segundo Templo',
+    priestTitle: 'Azarias o Sacerdote',
+    priestCompanion: 'Guia de Viagem',
+    priestRole: 'Acompanhante e Guia do Templo',
+    selectLanguage: 'Selecionar Idioma',
+    coins: 'Moedas',
+    stars: 'Estrelas de Sabedoria',
+    backpack: 'Mochila',
+    codex: 'Código de Leis',
+    badges: 'Emblemas',
+    chapter: 'Capítulo',
+    nextChapter: 'Avançar para o Próximo Capítulo',
+    previousChapter: 'Voltar ao Capítulo Anterior',
+    close: 'Fechar',
+    whyCoins: 'Para que servem as moedas?',
+    learningRank: 'Nível de Sabedoria',
+    adviceAndGuide: 'Conselhos e Orientação',
+    halakhaFact: 'Fato de Halachá por Azarias o Sacerdote',
+    continueJourney: 'Obrigado Azarias! Vamos continuar',
+    achievements: 'Conquistas e Emblemas',
+    backpackItems: 'Itens na Mochila',
+    codexTitle: 'Código de Leis do Templo e Festividades',
+    bonusQuiz: 'Pergunta Bônus de Halachá',
+    correct: 'Exatamente!',
+    incorrect: 'Não exatamente, tente novamente!',
+    audioPlaying: '🔊 Tocando melodia e canto...',
+    playSong: '🔊 Tocar música e melodia 🎵',
+
+    // Backpack Modal
+    backpackTitle: 'Mochila de Viagem',
+    backpackSubTitle: 'Equipamento coletado no caminho para Jerusalém',
+    maaserPurse: 'Bolsa do Segundo Dízimo',
+    silverCoins: 'Moedas de Prata',
+    holyRedemption: 'Redenção Sagrada',
+    closeBackpack: 'Fechar Mochila',
+
+    // Badges Modal
+    badgesTitle: 'Emblemas e Conquistas da Jornada',
+    badgesSubTitle: 'Honras concedidas pelo cumprimento dos preceitos',
+    badgesUnlocked: 'Emblemas Desbloqueados',
+    wisdomStars: 'Estrelas de Sabedoria',
+    starsCount: 'Estrelas',
+    chapterNumLabel: 'Capítulo',
+    closeBadges: 'Fechar',
+
+    // DevTools Modal
+    devToolsTitle: 'Barra do Desenvolvedor (Dev Mode)',
+    devToolsSubTitle: 'Acesso livre a capítulos e testes de componentes',
+    devToolsLocked: 'Bloqueado - Senha necessária',
+    passwordPrompt: 'Acesso ao Modo Desenvolvedor',
+    passwordSub: 'Insira a senha do desenvolvedor.',
+    passwordPlaceholder: 'Senha...',
+    enterDevBar: 'Entrar na Barra Dev 🔑',
+    wrongPassword: 'Senha incorreta!',
+    jumpChapters: 'Salto direto de capítulo',
+    skipTasks: 'Pular tarefas',
+    completeChapterTasks: 'Concluir tarefas do capítulo',
+    completeAndOpenNext: 'e abrir o próximo',
+    completeAllGame: 'Concluir os 6 capítulos (Celebração da Vitória)',
+    resourcesAndCodex: 'Recursos e Código',
+    add100Coins: '+100 Moedas',
+    add100Stars: '+100 Estrelas',
+    unlockCodex: 'Desbloquear Código',
+    unlockBadges: 'Desbloquear Emblemas',
+    resetGameProgress: 'Reiniciar Progresso do Jogo',
+    closeDev: 'Fechar Dev',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: 'Desafios Bônus de Halachá!',
+    optionalTag: 'Opcional!',
+    bonusQuizDesc: 'Perguntas de textos de Halachá - respostas corretas concedem moedas e estrelas bônus!',
+    earnedBonus: 'Bônus Acumulado',
+    question: 'Pergunta',
+    outOf: 'de',
+    correctBonusMsg: 'Correto! Você ganhou +10 moedas e +10 estrelas!',
+    answeredBonusCount: 'Respondidas',
+    bonusQuestionsCount: 'perguntas bônus neste capítulo',
+
+    // Tasks & Navigation
+    mission: 'Tarefa',
+    taskCompleted: 'Concluído!',
+    tasksCompleted: 'tarefas concluídas',
+    progressInChapter: 'Progresso no Capítulo',
+    nextChapterBtn: 'Avançar na jornada!',
+  },
+  fr: {
+    appTitle: 'Voyage au Temple de Jérusalem',
+    appSubTitle: 'Expérience de Pèlerinage du Second Temple',
+    priestTitle: 'Azaria le Prêtre',
+    priestCompanion: 'Guide de Voyage',
+    priestRole: 'Compagnon et Guide du Temple',
+    selectLanguage: 'Choisir la Langue',
+    coins: 'Pièces',
+    stars: 'Étoiles de Sagesse',
+    backpack: 'Sac à dos',
+    codex: 'Codex des Lois',
+    badges: 'Badges',
+    chapter: 'Chapitre',
+    nextChapter: 'Passer au Chapitre Suivant',
+    previousChapter: 'Revenir au Chapitre Précédent',
+    close: 'Fermer',
+    whyCoins: 'À quoi servent les pièces?',
+    learningRank: 'Rang de Sagesse',
+    adviceAndGuide: 'Conseils & Directives',
+    halakhaFact: 'Fait de Halakha par Azaria le Prêtre',
+    continueJourney: 'Merci Azaria! Continuons le voyage',
+    achievements: 'Succès et Badges',
+    backpackItems: 'Objets dans le Sac à dos',
+    codexTitle: 'Codex des Lois du Temple et des Fêtes',
+    bonusQuiz: 'Question Bonus de Halakha',
+    correct: 'Tout à fait!',
+    incorrect: 'Pas tout à fait, réessayez!',
+    audioPlaying: '🔊 Joue la mélodie et le chant...',
+    playSong: '🔊 Écouter le chant et la mélodie 🎵',
+
+    // Backpack Modal
+    backpackTitle: 'Sac à dos de Voyage',
+    backpackSubTitle: 'Équipement collecté en route vers Jérusalem',
+    maaserPurse: 'Bourse de la Seconde Dîme',
+    silverCoins: 'Pièces d\'Argent',
+    holyRedemption: 'Rachat Sacré',
+    closeBackpack: 'Fermer le Sac',
+
+    // Badges Modal
+    badgesTitle: 'Badges et Succès du Voyage',
+    badgesSubTitle: 'Distinctions pour l\'accomplissement des préceptes du pèlerinage',
+    badgesUnlocked: 'Badges Débloqués',
+    wisdomStars: 'Étoiles de Sagesse',
+    starsCount: 'Étoiles',
+    chapterNumLabel: 'Chapitre',
+    closeBadges: 'Fermer',
+
+    // DevTools Modal
+    devToolsTitle: 'Barre de Développement (Dev Mode)',
+    devToolsSubTitle: 'Accès libre aux chapitres et tests de composants',
+    devToolsLocked: 'Verrouillé - Mot de passe requis',
+    passwordPrompt: 'Accès au Mode Développeur',
+    passwordSub: 'Entrez le mot de passe développeur.',
+    passwordPlaceholder: 'Mot de passe...',
+    enterDevBar: 'Ouvrir la Barre Dev 🔑',
+    wrongPassword: 'Mot de passe incorrect!',
+    jumpChapters: 'Saut direct de chapitre',
+    skipTasks: 'Sauter des tâches',
+    completeChapterTasks: 'Terminer les tâches du chapitre',
+    completeAndOpenNext: 'et débloquer le suivant',
+    completeAllGame: 'Terminer les 6 chapitres (Célébration de la Victoire)',
+    resourcesAndCodex: 'Ressources et Codex',
+    add100Coins: '+100 Pièces',
+    add100Stars: '+100 Étoiles',
+    unlockCodex: 'Débloquer le Codex',
+    unlockBadges: 'Débloquer les Badges',
+    resetGameProgress: 'Réinitialiser la Progression',
+    closeDev: 'Fermer Dev',
+
+    // Bonus Quiz UI
+    bonusQuizTitle: 'Défis Bonus de Halakha!',
+    optionalTag: 'Optionnel!',
+    bonusQuizDesc: 'Questions issues des textes de Halakha - les bonnes réponses donnent des pièces et étoiles bonus!',
+    earnedBonus: 'Bonus Cumulé',
+    question: 'Question',
+    outOf: 'sur',
+    correctBonusMsg: 'Correct! Vous avez gagné +10 pièces et +10 étoiles!',
+    answeredBonusCount: 'Répondu à',
+    bonusQuestionsCount: 'questions bonus dans ce chapitre',
+
+    // Tasks & Navigation
+    mission: 'Tâche',
+    taskCompleted: 'Terminé!',
+    tasksCompleted: 'tâches terminées',
+    progressInChapter: 'Progression dans le Chapitre',
+    nextChapterBtn: 'En route pour la suite!',
+  },
+};
+
+interface LanguageContextType {
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => void;
+  dir: 'rtl' | 'ltr';
+  t: (key: string, fallback?: string) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [language, setLanguage] = useState<SupportedLanguage>('he');
+
+  const currentLangObj = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
+  const dir = currentLangObj.dir;
+
+  const t = (key: string, fallback?: string): string => {
+    return TRANSLATIONS[language]?.[key] || TRANSLATIONS['he']?.[key] || fallback || key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, dir, t }}>
+      <div dir={dir} className="w-full min-h-screen transition-all">
+        {children}
+      </div>
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
+};

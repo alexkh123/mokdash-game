@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_3_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -148,6 +150,8 @@ export const Chapter3Jerusalem: React.FC<Chapter3JerusalemProps> = ({
   onNextChapter,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
   // Market State
   const [marketTab, setMarketTab] = useState<'shop' | 'matching'>('shop');
   const [boughtSheep, setBoughtSheep] = useState<boolean>(false);
@@ -392,10 +396,10 @@ export const Chapter3Jerusalem: React.FC<Chapter3JerusalemProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          ירושלים העתיקה ומיקווי הטהרה
+          {chapterContent.c3.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          בשוק ירושלים נבחר שה וגדי תמימים, נתאמן בבדיקת מומים בזכוכית מגדלת, וניתהר במקווה המים לפני העלייה להר הבית!
+          {chapterContent.c3.subTitle}
         </p>
       </div>
 
@@ -794,8 +798,8 @@ export const Chapter3Jerusalem: React.FC<Chapter3JerusalemProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק ג' - ירושלים והשווקים"
-        questions={CHAPTER_3_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c3.title}
+        questions={chapterContent.c3.bonusQuestions.length > 0 ? chapterContent.c3.bonusQuestions.map((q, idx) => ({ ...q, id: `c3_b${idx+1}`, correctOption: CHAPTER_3_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_3_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />
@@ -803,9 +807,9 @@ export const Chapter3Jerusalem: React.FC<Chapter3JerusalemProps> = ({
       {/* Chapter Progress & Navigation */}
       <div className="flex items-center justify-between bg-[#FFF9E5] border-4 border-[#D2B48C] p-4 rounded-3xl shadow-md text-[#8B4513]">
         <div>
-          <span className="text-xs text-[#8B4513]/80 font-bold block">התקדמות בפרק ג'</span>
+          <span className="text-xs text-[#8B4513]/80 font-bold block">{t('progressInChapter', 'התקדמות בפרק ג\'')}</span>
           <span className="text-sm font-black text-[#8B4513]">
-            {completedTasks.filter((t) => t.startsWith('c3_')).length} / 3 משימות הושלמו
+            {completedTasks.filter((task) => task.startsWith('c3_')).length} / 3 {t('tasksCompleted', 'משימות הושלמו')}
           </span>
         </div>
 
@@ -821,7 +825,7 @@ export const Chapter3Jerusalem: React.FC<Chapter3JerusalemProps> = ({
               : 'bg-gray-200 text-gray-500 border-2 border-gray-300 cursor-not-allowed'
           }`}
         >
-          <span>עלה להר הבית!</span>
+          <span>{t('nextChapterBtn', 'עלה להר הבית!')}</span>
           <ArrowLeft className="w-4 h-4" />
         </button>
       </div>

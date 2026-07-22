@@ -25,7 +25,7 @@ export interface HalachaTerm {
   shortDesc: string;
   fullDesc: string;
   sourceText?: string;
-  category: 'מצוות העלייה' | 'קורבנות' | 'טהרה' | 'המקדש';
+  category: 'מצוות העלייה' | 'קורבנות' | 'טהרה' | 'המקדש' | string;
   unlocked: boolean;
   icon: string;
 }

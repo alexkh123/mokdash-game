@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Music, CheckCircle2, ArrowLeft, Heart, Compass, Sparkles, HelpCircle, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_2_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -60,6 +62,8 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   onNextChapter,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
   // Rhythm Song Game State
   const [songProgress, setSongProgress] = useState<number>(0);
   const [activeBeat, setActiveBeat] = useState<number>(1);
@@ -182,10 +186,10 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          המסע בשבילי הרי יהודה - אתגרי דרך והלכה
+          {chapterContent.c2.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          שיירות העולים לרגל צועדות יחד בשירה! נעלה את קצב שירי המעלות, נלמד את הלכות הכנסת אורחים ועישור דמאי, ונבחן את הלכות הראייה בתצפית ירושלים.
+          {chapterContent.c2.subTitle}
         </p>
       </div>
 
@@ -434,8 +438,8 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק ב' - בדרך לירושלים"
-        questions={CHAPTER_2_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c2.title}
+        questions={chapterContent.c2.bonusQuestions.length > 0 ? chapterContent.c2.bonusQuestions.map((q, idx) => ({ ...q, id: `c2_b${idx+1}`, correctOption: CHAPTER_2_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_2_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />
@@ -443,9 +447,9 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
       {/* Chapter Progress & Navigation */}
       <div className="flex items-center justify-between bg-[#FFF9E5] border-4 border-[#D2B48C] p-4 rounded-3xl shadow-md text-[#8B4513]">
         <div>
-          <span className="text-xs text-[#8B4513]/80 font-bold block">התקדמות בפרק ב'</span>
+          <span className="text-xs text-[#8B4513]/80 font-bold block">{t('progressInChapter', 'התקדמות בפרק ב\'')}</span>
           <span className="text-sm font-black text-[#8B4513]">
-            {completedTasks.filter((t) => t.startsWith('c2_')).length} / 3 משימות הושלמו
+            {completedTasks.filter((task) => task.startsWith('c2_')).length} / 3 {t('tasksCompleted', 'משימות הושלמו')}
           </span>
         </div>
 
@@ -461,7 +465,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               : 'bg-gray-200 text-gray-500 border-2 border-gray-300 cursor-not-allowed'
           }`}
         >
-          <span>היכנס לירושלים!</span>
+          <span>{t('nextChapterBtn', 'היכנס לירושלים!')}</span>
           <ArrowLeft className="w-4 h-4" />
         </button>
       </div>

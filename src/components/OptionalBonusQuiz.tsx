@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { HelpCircle, Sparkles, Check, X, Award, BookOpen } from 'lucide-react';
 import { soundManager } from '../utils/audio';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface BonusQuestion {
   id: string;
@@ -24,6 +25,7 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
   onAddCoins,
   onAddStars,
 }) => {
+  const { t } = useLanguage();
   const [answeredState, setAnsweredState] = useState<{ [qId: string]: number }>({});
   const [bonusCoinsEarned, setBonusCoinsEarned] = useState<number>(0);
   const [bonusStarsEarned, setBonusStarsEarned] = useState<number>(0);
@@ -65,14 +67,14 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base sm:text-lg font-black text-[#8B4513] font-heading">
-                אתגרי רשות הלכתיים - בונוס!
+                {t('bonusQuizTitle', 'אתגרי רשות הלכתיים - בונוס!')}
               </h3>
               <span className="bg-[#8B4513] text-[#FFD700] text-[10px] font-black px-2 py-0.5 rounded-full border border-[#FFD700]">
-                רשות! לא חובה למעבר
+                {t('optionalTag', 'רשות! לא חובה למעבר')}
               </span>
             </div>
             <p className="text-xs text-[#5D4037] font-medium">
-              שאלות מתוך ספרי ההלכה (משנה ורמב"ם) - תשובות נכונות מעניקות בונוס מטבעות וכוכבים!
+              {t('bonusQuizDesc', 'שאלות מתוך ספרי ההלכה - תשובות נכונות מעניקות בונוס מטבעות וכוכבים!')}
             </p>
           </div>
         </div>
@@ -80,7 +82,7 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
         {/* Bonus Counter */}
         <div className="bg-[#FDF6E3] border-2 border-[#8B4513] px-3 py-1.5 rounded-2xl flex items-center gap-2 text-xs font-black text-[#8B4513]">
           <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-          <span>בונוס שנצבר: +{bonusCoinsEarned} מטבעות | +{bonusStarsEarned} כוכבים</span>
+          <span>{t('earnedBonus', 'בונוס שנצבר')}: +{bonusCoinsEarned} {t('coins', 'מטבעות')} | +{bonusStarsEarned} {t('starsCount', 'כוכבים')}</span>
         </div>
       </div>
 
@@ -110,7 +112,7 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
                     {q.source}
                   </span>
                   <span className="text-[10px] text-[#8B4513] font-black">
-                    שאלה {idx + 1} מתוך {questions.length}
+                    {t('question', 'שאלה')} {idx + 1} {t('outOf', 'מתוך')} {questions.length}
                   </span>
                 </div>
 
@@ -159,12 +161,12 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
                     {isCorrect ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-700" />
-                        <span>נכון! קיבלת +10 מטבעות ו-+10 כוכבים!</span>
+                        <span>{t('correctBonusMsg', 'נכון! קיבלת +10 מטבעות ו-+10 כוכבים!')}</span>
                       </>
                     ) : (
                       <>
                         <X className="w-3.5 h-3.5 text-rose-700" />
-                        <span>לא מדויק</span>
+                        <span>{t('incorrect', 'לא מדויק')}</span>
                       </>
                     )}
                   </div>
@@ -177,8 +179,9 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
       </div>
 
       <div className="mt-3 text-center text-[11px] font-bold text-[#8B4513]/70">
-        ענית על {answeredCount} מתוך {questions.length} שאלות הבונוס בפרק זה
+        {t('answeredBonusCount', 'ענית על')} {answeredCount} {t('outOf', 'מתוך')} {questions.length} {t('bonusQuestionsCount', 'שאלות הבונוס בפרק זה')}
       </div>
     </div>
   );
 };
+

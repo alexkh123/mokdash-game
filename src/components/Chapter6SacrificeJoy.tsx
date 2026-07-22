@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Hand, Flame, Award, CheckCircle2, Sparkles, HeartHandshake, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_6_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -60,6 +62,8 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
   onTriggerCelebration,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
   // Task 1: Semichah Hold Progress & Halakhic Quiz
   const [semichahProgress, setSemichahProgress] = useState<number>(0);
   const [semichahQuizAnswered, setSemichahQuizAnswered] = useState<boolean>(false);
@@ -157,10 +161,10 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          הקודש פנימה ושמחת החג בירושלים
+          {chapterContent.c6.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          רגע השיא של העלייה לרגל! נסמוך ידיינו בכוונת הלב, נסדר את חמשת שלבי עבודת הקודש בסדר ההלכתי הנכון, ונחגוג בשמחת חג אדירה!
+          {chapterContent.c6.subTitle}
         </p>
       </div>
 
@@ -404,8 +408,8 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק ו' - סמיכה, עבודה ושמחה"
-        questions={CHAPTER_6_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c6.title}
+        questions={chapterContent.c6.bonusQuestions.length > 0 ? chapterContent.c6.bonusQuestions.map((q, idx) => ({ ...q, id: `c6_b${idx+1}`, correctOption: CHAPTER_6_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_6_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />

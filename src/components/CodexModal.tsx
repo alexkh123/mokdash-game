@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, BookOpen, Lock, Sparkles, CheckCircle2, Coins, Flame, Utensils, HeartHandshake, Music, Waves, Search, Trees, Droplet, Hand } from 'lucide-react';
 import { HalachaTerm } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedHalachaTerms } from '../data/halachaCodex';
 
 interface CodexModalProps {
   isOpen: boolean;
@@ -25,19 +27,38 @@ const getTermIcon = (iconName: string) => {
 };
 
 export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('הכל');
-  const [selectedTerm, setSelectedTerm] = useState<HalachaTerm | null>(null);
+  const { language, t } = useLanguage();
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const categories = ['הכל', 'מצוות העלייה', 'קורבנות', 'טהרה', 'המקדש'];
-
-  const filteredCodex = codex.filter((item) => {
-    if (selectedCategory === 'הכל') return true;
-    return item.category === selectedCategory;
+  const localizedCodex = getLocalizedHalachaTerms(language).map(term => {
+    const orig = codex.find(c => c.id === term.id);
+    return {
+      ...term,
+      unlocked: orig ? orig.unlocked : term.unlocked
+    };
   });
 
-  const activeTerm = selectedTerm || filteredCodex.find(t => t.unlocked) || codex[0];
+  const categories = [
+    { id: 'all', label: t('all', 'הכל') },
+    { id: 'pilgrimage', label: t('categoryPilgrimage', 'מצוות העלייה') },
+    { id: 'sacrifices', label: t('categorySacrifices', 'קורבנות') },
+    { id: 'purity', label: t('categoryPurity', 'טהרה') },
+    { id: 'temple', label: t('categoryTemple', 'המקדש') },
+  ];
+
+  const filteredCodex = localizedCodex.filter((item) => {
+    if (selectedCategory === 'all') return true;
+    if (selectedCategory === 'pilgrimage') return item.category.includes('העלייה') || item.category.includes('Pilgrimage') || item.category.includes('Паломничества') || item.category.includes('Peregrinación') || item.category.includes('Pèlerinage');
+    if (selectedCategory === 'sacrifices') return item.category.includes('קורבנות') || item.category.includes('Sacrifices') || item.category.includes('Жертвоприношения') || item.category.includes('Sacrificios');
+    if (selectedCategory === 'purity') return item.category.includes('טהרה') || item.category.includes('Purity') || item.category.includes('Очищение') || item.category.includes('Pureza') || item.category.includes('Pureté');
+    if (selectedCategory === 'temple') return item.category.includes('המקדש') || item.category.includes('Temple') || item.category.includes('Храм') || item.category.includes('Templo');
+    return true;
+  });
+
+  const activeTerm = localizedCodex.find(t => t.id === selectedTermId) || filteredCodex.find(t => t.unlocked) || localizedCodex[0];
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 animate-fadeIn">
@@ -50,8 +71,8 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
               <BookOpen className="w-6 h-6 text-[#8B4513]" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-[#8B4513] font-heading">ספר ההלכות (קודקס)</h2>
-              <p className="text-xs text-[#8B4513]/80 font-bold">אנציקלופדיית בית המקדש ומצוות העלייה לרגל</p>
+              <h2 className="text-xl font-black text-[#8B4513] font-heading">{t('codexTitle', 'ספר ההלכות (קודקס)')}</h2>
+              <p className="text-xs text-[#8B4513]/80 font-bold">{t('codexSubTitle', 'אנציקלופדיית בית המקדש ומצוות העלייה לרגל')}</p>
             </div>
           </div>
           <button
@@ -66,15 +87,15 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
         <div className="bg-[#FDF6E3] border-b-2 border-[#D2B48C] p-2.5 px-4 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                selectedCategory === cat
+                selectedCategory === cat.id
                   ? 'bg-[#8B4513] text-white shadow-md'
                   : 'bg-white text-[#8B4513] hover:bg-[#FFD700] border-2 border-[#D2B48C]'
               }`}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -89,7 +110,7 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
               return (
                 <button
                   key={item.id}
-                  onClick={() => setSelectedTerm(item)}
+                  onClick={() => setSelectedTermId(item.id)}
                   className={`w-full text-right p-3 rounded-2xl border-2 transition-all flex items-start gap-3 ${
                     isSelected
                       ? 'bg-[#FFD700] border-[#8B4513] shadow-md text-[#8B4513]'
@@ -109,7 +130,7 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
                       {item.unlocked ? (
                         <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                       ) : (
-                        <span className="text-[10px] bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded font-bold">נעול</span>
+                        <span className="text-[10px] bg-gray-300 text-gray-700 px-1.5 py-0.5 rounded font-bold">{t('locked', 'נעול')}</span>
                       )}
                     </div>
                     <p className="text-xs text-[#5D4037] font-medium truncate">{item.hebrewTitle}</p>
@@ -127,17 +148,17 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
                 {/* Status Badge */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs bg-[#8B4513] text-white px-3 py-1 rounded-xl font-bold shadow-sm">
-                    קטגוריה: {activeTerm.category}
+                    {t('category', 'קטגוריה')}: {activeTerm.category}
                   </span>
                   {activeTerm.unlocked ? (
                     <span className="text-xs bg-emerald-100 text-emerald-800 px-3 py-1 rounded-xl border-2 border-emerald-500 flex items-center gap-1 font-bold">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                      מושג נלמד במשחק
+                      {t('termUnlockedMsg', 'מושג נלמד במשחק')}
                     </span>
                   ) : (
                     <span className="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-xl border-2 border-gray-400 flex items-center gap-1 font-bold">
                       <Lock className="w-3.5 h-3.5" />
-                      ייפתח במהלך הפרקים
+                      {t('termLockedMsg', 'ייפתח במהלך הפרקים')}
                     </span>
                   )}
                 </div>
@@ -165,7 +186,7 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
               </div>
             ) : (
               <div className="text-center py-12 text-[#8B4513]/60 font-bold">
-                בחר מושג מהרשימה לצפייה בפרטים
+                {t('selectTermPrompt', 'בחר מושג מהרשימה לצפייה בפרטים')}
               </div>
             )}
 
@@ -174,7 +195,7 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
                 onClick={onClose}
                 className="px-6 py-2.5 bg-[#FF4444] hover:bg-red-600 text-white font-black rounded-2xl border-b-4 border-red-800 shadow-md transition-all active:translate-y-0.5 text-sm"
               >
-                סגור ספר
+                {t('closeCodex', 'סגור ספר')}
               </button>
             </div>
 
@@ -186,3 +207,4 @@ export const CodexModal: React.FC<CodexModalProps> = ({ isOpen, onClose, codex }
     </div>
   );
 };
+

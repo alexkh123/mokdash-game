@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Coins, CheckCircle2, ArrowLeft, Scroll, Sparkles, Calculator, HelpCircle, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_1_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -64,6 +66,9 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
   onNextChapter,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
+
   // Task 1: Ma'aser Sheni Calculation Challenge
   const [currentCalcIndex, setCurrentCalcIndex] = useState<number>(0);
   const [calcSolvedCount, setCalcSolvedCount] = useState<number>(0);
@@ -298,10 +303,10 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          הכנות בחצר הבית - אתגרי הלכה וחישוב
+          {chapterContent.c1.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          חג העלייה לרגל בפתח! עלינו לחשב בדיוק את פדיון מעשר שני והחומש, לענות על שאלות בהלכות קורבנות, ולארוז את הציוד לפי דרכי הטהרה.
+          {chapterContent.c1.subTitle}
         </p>
       </div>
 
@@ -585,8 +590,8 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק א' - הכנות בבית"
-        questions={CHAPTER_1_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c1.title}
+        questions={chapterContent.c1.bonusQuestions.length > 0 ? chapterContent.c1.bonusQuestions.map((q, idx) => ({ ...q, id: `c1_b${idx+1}`, correctOption: CHAPTER_1_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_1_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />
@@ -594,9 +599,9 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       {/* Chapter Progress & Navigation */}
       <div className="flex items-center justify-between bg-[#FFF9E5] border-4 border-[#D2B48C] p-4 rounded-3xl shadow-md text-[#8B4513]">
         <div>
-          <span className="text-xs text-[#8B4513]/80 font-bold block">התקדמות בפרק א'</span>
+          <span className="text-xs text-[#8B4513]/80 font-bold block">{t('progressInChapter', 'התקדמות בפרק א\'')}</span>
           <span className="text-sm font-black text-[#8B4513]">
-            {completedTasks.filter((t) => t.startsWith('c1_')).length} / 3 משימות הושלמו
+            {completedTasks.filter((task) => task.startsWith('c1_')).length} / 3 {t('tasksCompleted', 'משימות הושלמו')}
           </span>
         </div>
 
@@ -612,7 +617,7 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
               : 'bg-gray-200 text-gray-500 border-2 border-gray-300 cursor-not-allowed'
           }`}
         >
-          <span>צא לדרך לירושלים!</span>
+          <span>{t('nextChapterBtn', 'צא לדרך לירושלים!')}</span>
           <ArrowLeft className="w-4 h-4" />
         </button>
       </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { X, Award, Sparkles, Coins, Music, Droplet, Music2, CheckCircle2, Lock } from 'lucide-react';
 import { Badge } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedChapters } from '../data/chaptersData';
 
 interface AchievementsModalProps {
   isOpen: boolean;
@@ -22,9 +24,22 @@ const getBadgeIcon = (iconName: string) => {
 };
 
 export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, onClose, badges, stars }) => {
+  const { language, t } = useLanguage();
+
   if (!isOpen) return null;
 
   const unlockedCount = badges.filter(b => b.unlocked).length;
+  const localizedChapters = getLocalizedChapters(language);
+
+  const localizedBadges = badges.map(badge => {
+    const ch = localizedChapters.find(c => c.badgeAwarded.id === badge.id);
+    if (!ch) return badge;
+    return {
+      ...badge,
+      title: ch.badgeAwarded.title,
+      description: ch.badgeAwarded.description,
+    };
+  });
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
@@ -37,8 +52,8 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
               <Award className="w-6 h-6 text-[#8B4513]" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-[#8B4513] font-heading">עיטורי והישגי המסע</h2>
-              <p className="text-xs text-[#8B4513]/80 font-bold">אותות כבוד על ביצוע מצוות העלייה לרגל</p>
+              <h2 className="text-xl font-black text-[#8B4513] font-heading">{t('badgesTitle', 'עיטורי והישגי המסע')}</h2>
+              <p className="text-xs text-[#8B4513]/80 font-bold">{t('badgesSubTitle', 'אותות כבוד על ביצוע מצוות העלייה לרגל')}</p>
             </div>
           </div>
           <button
@@ -56,7 +71,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
               <Award className="w-6 h-6 text-[#8B4513]" />
             </div>
             <div>
-              <span className="text-[11px] text-[#8B4513]/80 font-bold block">עיטורים שהושגו</span>
+              <span className="text-[11px] text-[#8B4513]/80 font-bold block">{t('badgesUnlocked', 'עיטורים שהושגו')}</span>
               <span className="text-lg font-black text-[#8B4513]">{unlockedCount} / {badges.length}</span>
             </div>
           </div>
@@ -66,15 +81,15 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
               <Sparkles className="w-6 h-6 text-[#8B4513]" />
             </div>
             <div>
-              <span className="text-[11px] text-[#8B4513]/80 font-bold block">כוכבי חכמה</span>
-              <span className="text-lg font-black text-[#8B4513]">{stars} כוכבים</span>
+              <span className="text-[11px] text-[#8B4513]/80 font-bold block">{t('wisdomStars', 'כוכבי חכמה')}</span>
+              <span className="text-lg font-black text-[#8B4513]">{stars} {t('starsCount', 'כוכבים')}</span>
             </div>
           </div>
         </div>
 
         {/* Badges Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-80 overflow-y-auto pl-1">
-          {badges.map((badge) => (
+          {localizedBadges.map((badge) => (
             <div
               key={badge.id}
               className={`p-3.5 rounded-2xl border-2 transition-all flex items-start gap-3 relative ${
@@ -97,7 +112,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
                 <p className="text-xs text-[#5D4037] font-medium leading-snug">{badge.description}</p>
                 {badge.unlockedChapter && (
                   <span className="inline-block mt-2 text-[10px] bg-[#8B4513] text-white px-2 py-0.5 rounded-lg font-bold">
-                    פרק {badge.unlockedChapter}
+                    {t('chapterNumLabel', 'פרק')} {badge.unlockedChapter}
                   </span>
                 )}
               </div>
@@ -111,7 +126,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
             onClick={onClose}
             className="w-full py-3 bg-[#FF4444] hover:bg-red-600 text-white font-black text-lg rounded-2xl border-b-4 border-red-800 shadow-md transition-all active:translate-y-0.5"
           >
-            סגור
+            {t('closeBadges', 'סגור')}
           </button>
         </div>
 
@@ -119,3 +134,4 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({ isOpen, on
     </div>
   );
 };
+

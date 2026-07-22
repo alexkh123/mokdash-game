@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Trees, Droplet, CheckCircle2, ArrowLeft, Sparkles, Coins, Calculator, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_4_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -60,6 +62,8 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
   onNextChapter,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
   // Task 1: Half-Shekel Tax Math Challenge
   const [shekelFamilyCount, setShekelFamilyCount] = useState<number>(8); // 8 males
   const [selectedShekelAnswer, setSelectedShekelAnswer] = useState<number | null>(null);
@@ -144,10 +148,10 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          הר הבית, לשכות העזרה ומס מחצית השקל
+          {chapterContent.c4.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          נכנסים בשערי הר הבית! עלינו לשלם את מס מחצית השקל ללשכה, לבדוק עצים טהורים מתולעים, ולסחוט שמן זית זך וכתית למנורה.
+          {chapterContent.c4.subTitle}
         </p>
       </div>
 
@@ -362,8 +366,8 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק ד' - הר הבית והלשכות"
-        questions={CHAPTER_4_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c4.title}
+        questions={chapterContent.c4.bonusQuestions.length > 0 ? chapterContent.c4.bonusQuestions.map((q, idx) => ({ ...q, id: `c4_b${idx+1}`, correctOption: CHAPTER_4_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_4_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />
@@ -371,9 +375,9 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
       {/* Chapter Navigation */}
       <div className="flex items-center justify-between bg-[#FFF9E5] border-4 border-[#D2B48C] p-4 rounded-3xl shadow-md text-[#8B4513]">
         <div>
-          <span className="text-xs text-[#8B4513]/80 font-bold block">התקדמות בפרק ד'</span>
+          <span className="text-xs text-[#8B4513]/80 font-bold block">{t('progressInChapter', 'התקדמות בפרק ד\'')}</span>
           <span className="text-sm font-black text-[#8B4513]">
-            {completedTasks.filter((t) => t.startsWith('c4_')).length} / 3 משימות הושלמו
+            {completedTasks.filter((task) => task.startsWith('c4_')).length} / 3 {t('tasksCompleted', 'משימות הושלמו')}
           </span>
         </div>
 
@@ -389,7 +393,7 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
               : 'bg-gray-200 text-gray-500 border-2 border-gray-300 cursor-not-allowed'
           }`}
         >
-          <span>עלה לעזרת ישראל!</span>
+          <span>{t('nextChapterBtn', 'עלה לעזרת ישראל!')}</span>
           <ArrowLeft className="w-4 h-4" />
         </button>
       </div>

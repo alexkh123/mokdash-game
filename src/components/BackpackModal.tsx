@@ -1,6 +1,8 @@
 import React from 'react';
 import { X, Backpack, Coins, Shirt, Footprints, Wand2, CupSoda, Flame, Utensils, HeartHandshake, Sparkles, Droplet } from 'lucide-react';
 import { InventoryItem } from '../types';
+import { useLanguage } from '../context/LanguageContext';
+import { getLocalizedInventory } from '../data/chaptersData';
 
 interface BackpackModalProps {
   isOpen: boolean;
@@ -25,7 +27,17 @@ const getItemIcon = (iconName: string) => {
 };
 
 export const BackpackModal: React.FC<BackpackModalProps> = ({ isOpen, onClose, items, coins }) => {
+  const { language, t } = useLanguage();
+
   if (!isOpen) return null;
+
+  const localizedItems = getLocalizedInventory(language).map(locItem => {
+    const userItem = items.find(i => i.id === locItem.id);
+    return {
+      ...locItem,
+      quantity: userItem ? userItem.quantity : locItem.quantity
+    };
+  });
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
@@ -38,8 +50,8 @@ export const BackpackModal: React.FC<BackpackModalProps> = ({ isOpen, onClose, i
               <Backpack className="w-6 h-6 text-[#8B4513]" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-[#8B4513] font-heading">תרמיל המסע</h2>
-              <p className="text-xs text-[#8B4513]/80 font-bold">ציוד וחפצים שנאספו בדרך לירושלים</p>
+              <h2 className="text-xl font-black text-[#8B4513] font-heading">{t('backpackTitle', 'תרמיל המסע')}</h2>
+              <p className="text-xs text-[#8B4513]/80 font-bold">{t('backpackSubTitle', 'ציוד וחפצים שנאספו בדרך לירושלים')}</p>
             </div>
           </div>
           <button
@@ -55,18 +67,18 @@ export const BackpackModal: React.FC<BackpackModalProps> = ({ isOpen, onClose, i
           <div className="flex items-center gap-3">
             <Coins className="w-7 h-7 text-[#8B4513] animate-bounce" />
             <div>
-              <span className="text-xs text-[#8B4513]/80 font-bold block">ארנק מעשר שני</span>
-              <span className="text-lg font-black text-[#8B4513]">{coins} מטבעות כסף</span>
+              <span className="text-xs text-[#8B4513]/80 font-bold block">{t('maaserPurse', 'ארנק מעשר שני')}</span>
+              <span className="text-lg font-black text-[#8B4513]">{coins} {t('silverCoins', 'מטבעות כסף')}</span>
             </div>
           </div>
           <span className="text-xs bg-[#8B4513] text-white px-3 py-1 rounded-xl font-bold shadow-sm">
-            פדיון קודש
+            {t('holyRedemption', 'פדיון קודש')}
           </span>
         </div>
 
         {/* Items Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto pl-1">
-          {items.map((item) => (
+          {localizedItems.map((item) => (
             <div
               key={item.id}
               className="bg-white border-2 border-[#D2B48C] hover:border-[#8B4513] rounded-2xl p-3 flex items-start gap-3 transition-all shadow-sm"
@@ -93,7 +105,7 @@ export const BackpackModal: React.FC<BackpackModalProps> = ({ isOpen, onClose, i
             onClick={onClose}
             className="w-full py-3 bg-[#FF4444] hover:bg-red-600 text-white font-black text-lg rounded-2xl border-b-4 border-red-800 active:translate-y-1 shadow-md transition-all"
           >
-            סגור תרמיל
+            {t('closeBackpack', 'סגור תרמיל')}
           </button>
         </div>
 
@@ -101,3 +113,4 @@ export const BackpackModal: React.FC<BackpackModalProps> = ({ isOpen, onClose, i
     </div>
   );
 };
+

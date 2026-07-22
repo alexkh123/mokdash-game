@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Music2, CheckCircle2, ArrowLeft, Sparkles, Flame, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
+import { useLanguage } from '../context/LanguageContext';
+import { getChapterContent } from '../data/localizedChapterContent';
 
 const CHAPTER_5_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -60,6 +62,8 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
   onNextChapter,
   completedTasks,
 }) => {
+  const { language, t } = useLanguage();
+  const chapterContent = getChapterContent(language);
   // Task 1: Levite Instruments State & Quiz
   const [playedHarp, setPlayedHarp] = useState<boolean>(false);
   const [playedLyre, setPlayedLyre] = useState<boolean>(false);
@@ -157,10 +161,10 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
       {/* Intro Banner */}
       <div className="bg-[#FFD700] p-4 sm:p-5 rounded-3xl border-4 border-[#8B4513] shadow-md text-[#8B4513]">
         <h2 className="text-xl sm:text-2xl font-black font-heading mb-1">
-          עזרת ישראל, דוכן הלוויים והמזבח הגדול
+          {chapterContent.c5.title}
         </h2>
         <p className="text-xs sm:text-sm font-bold leading-relaxed">
-          עולים במדרגות שער ניקנור! הלוויים מנגנים ומשוררים על 15 המדרגות, ועל גבי המזבח הגדול מסדרים את אש המערכה לפי דיני התורה.
+          {chapterContent.c5.subTitle}
         </p>
       </div>
 
@@ -369,8 +373,8 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
 
       {/* OPTIONAL BONUS HALAKHIC QUIZ */}
       <OptionalBonusQuiz
-        chapterTitle="פרק ה' - העזרה הפנימית והמזבח"
-        questions={CHAPTER_5_BONUS_QUESTIONS}
+        chapterTitle={chapterContent.c5.title}
+        questions={chapterContent.c5.bonusQuestions.length > 0 ? chapterContent.c5.bonusQuestions.map((q, idx) => ({ ...q, id: `c5_b${idx+1}`, correctOption: CHAPTER_5_BONUS_QUESTIONS[idx]?.correctOption ?? 0 })) : CHAPTER_5_BONUS_QUESTIONS}
         onAddCoins={onAddCoins}
         onAddStars={onAddStars}
       />
@@ -378,9 +382,9 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
       {/* Chapter Navigation */}
       <div className="flex items-center justify-between bg-[#FFF9E5] border-4 border-[#D2B48C] p-4 rounded-3xl shadow-md text-[#8B4513]">
         <div>
-          <span className="text-xs text-[#8B4513]/80 font-bold block">התקדמות בפרק ה'</span>
+          <span className="text-xs text-[#8B4513]/80 font-bold block">{t('progressInChapter', 'התקדמות בפרק ה\'')}</span>
           <span className="text-sm font-black text-[#8B4513]">
-            {completedTasks.filter((t) => t.startsWith('c5_')).length} / 2 משימות הושלמו
+            {completedTasks.filter((task) => task.startsWith('c5_')).length} / 2 {t('tasksCompleted', 'משימות הושלמו')}
           </span>
         </div>
 
@@ -396,7 +400,7 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
               : 'bg-gray-200 text-gray-500 border-2 border-gray-300 cursor-not-allowed'
           }`}
         >
-          <span>עבור להקשר והשמחה!</span>
+          <span>{t('nextChapterBtn', 'עבור להקשר והשמחה!')}</span>
           <ArrowLeft className="w-4 h-4" />
         </button>
       </div>
