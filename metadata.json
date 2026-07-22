@@ -1,0 +1,6 @@
+{
+  "name": "המסע לבית המקדש",
+  "description": "משחק לימודי חווייתי לילדים על העלייה לרגל, מצוות הדרך והקרבת הקורבנות בבית המקדש השני",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

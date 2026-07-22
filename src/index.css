@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Assistant', 'Rubik', sans-serif;
+    background-color: #FDF6E3;
+    color: #5D4037;
+  }
+  
+  h1, h2, h3, .font-heading {
+    font-family: 'Rubik', 'Assistant', sans-serif;
+    color: #8B4513;
+  }
+
+  .font-serif-hebrew {
+    font-family: 'Frank Ruhl Libre', serif;
+  }
+}
+
+/* Custom scrollbars matching Vibrant theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #FDF6E3;
+  border-left: 2px solid #D2B48C;
+}
+::-webkit-scrollbar-thumb {
+  background: #D2B48C;
+  border: 2px solid #8B4513;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8B4513;
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.6); }
+  50% { box-shadow: 0 0 25px rgba(255, 215, 0, 1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-float {
+  animation: float-gentle 3s ease-in-out infinite;
+}
+
+.glow-gold {
+  animation: pulse-gold 2s infinite;
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+
+
