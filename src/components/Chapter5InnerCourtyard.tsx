@@ -85,6 +85,16 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
     }
     onAddStars(5);
 
+    // Speak Levite psalm aloud
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const psalmText = 'הַלְלוּאֵל בְּקָדְשׁוֹ הַלְלוּהוּ בִּרְקִיעַ עֻזּוֹ! הַלְלוּהוּ בְּתֵקַע שׁוֹפָר הַלְלוּהוּ בְּנֵבֶל וְכִנּוֹר!';
+      const utterance = new SpeechSynthesisUtterance(psalmText);
+      utterance.lang = 'he-IL';
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
     const nextHarp = type === 'harp' ? true : playedHarp;
     const nextLyre = type === 'lyre' ? true : playedLyre;
     const nextCymbals = type === 'cymbals' ? true : playedCymbals;

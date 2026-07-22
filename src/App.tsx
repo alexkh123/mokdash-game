@@ -10,6 +10,7 @@ import { BackpackModal } from './components/BackpackModal';
 import { CodexModal } from './components/CodexModal';
 import { AchievementsModal } from './components/AchievementsModal';
 import { DevToolsModal } from './components/DevToolsModal';
+import { PriestCompanion } from './components/PriestCompanion';
 
 import { Chapter1Home } from './components/Chapter1Home';
 import { Chapter2Road } from './components/Chapter2Road';
@@ -333,6 +334,14 @@ export default function App() {
         onUnlockAllCodex={handleUnlockAllCodex}
         onUnlockAllBadges={handleUnlockAllBadges}
         onResetGame={handleResetGame}
+      />
+
+      {/* Priest Companion Floating Guide */}
+      <PriestCompanion
+        currentChapter={currentChapter}
+        coins={coins}
+        stars={stars}
+        completedTasksCount={completedTasks.length}
       />
 
       {/* Footer */}

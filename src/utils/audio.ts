@@ -246,6 +246,112 @@ class SoundManager {
     osc.start(now);
     osc.stop(now + 0.3);
   }
+
+  // Complete Song of Ascents (שיר המעלות) with Melody & Hebrew Speech Synthesis
+  public playSongOfAscents(onVerseChange?: (verse: string, progressPercent: number) => void): () => void {
+    const ctx = this.getContext();
+
+    const verses = [
+      'שָׂמַחְתִּי בְּאֹמְרִים לִי בֵּית ה\' נֵלֵךְ!',
+      'עֹמְדוֹת הָיוּ רַגְלֵינוּ בִּשְׁעָרַיִךְ יְרוּשָׁלָםִ!',
+      'יְרוּשָׁלַםִ הַבְּנוּיָה כְּעִיר שֶׁחֻבְּרָה לָהּ יַחְדָּו!',
+      'שֶׁשָּׁם עָלוּ שְׁבָטִים שִׁבְטֵי יָהּ עֵדוּת לְיִשְׂרָאֵל!'
+    ];
+
+    // Speech Synthesis in Hebrew if available
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      verses.forEach((verseText, vIdx) => {
+        const utterance = new SpeechSynthesisUtterance(verseText);
+        utterance.lang = 'he-IL';
+        utterance.rate = 0.85;
+        utterance.pitch = 1.1;
+        utterance.onstart = () => {
+          if (onVerseChange) {
+            onVerseChange(verseText, Math.min(100, (vIdx + 1) * 25));
+          }
+        };
+        window.speechSynthesis.speak(utterance);
+      });
+    }
+
+    if (!ctx) return () => {};
+
+    // Play musical tune notes using Web Audio API synthesizer
+    const melodyNotes = [
+      // Verse 1
+      { freq: 293.66, dur: 0.35, verseIdx: 0 }, // D4
+      { freq: 369.99, dur: 0.35, verseIdx: 0 }, // F#4
+      { freq: 440.00, dur: 0.45, verseIdx: 0 }, // A4
+      { freq: 493.88, dur: 0.45, verseIdx: 0 }, // B4
+      { freq: 587.33, dur: 0.70, verseIdx: 0 }, // D5
+      // Verse 2
+      { freq: 440.00, dur: 0.35, verseIdx: 1 }, // A4
+      { freq: 493.88, dur: 0.35, verseIdx: 1 }, // B4
+      { freq: 587.33, dur: 0.45, verseIdx: 1 }, // D5
+      { freq: 659.25, dur: 0.45, verseIdx: 1 }, // E5
+      { freq: 739.99, dur: 0.70, verseIdx: 1 }, // F#5
+      // Verse 3
+      { freq: 659.25, dur: 0.35, verseIdx: 2 }, // E5
+      { freq: 587.33, dur: 0.35, verseIdx: 2 }, // D5
+      { freq: 493.88, dur: 0.45, verseIdx: 2 }, // B4
+      { freq: 440.00, dur: 0.45, verseIdx: 2 }, // A4
+      { freq: 587.33, dur: 0.70, verseIdx: 2 }, // D5
+      // Verse 4
+      { freq: 369.99, dur: 0.35, verseIdx: 3 }, // F#4
+      { freq: 440.00, dur: 0.35, verseIdx: 3 }, // A4
+      { freq: 493.88, dur: 0.45, verseIdx: 3 }, // B4
+      { freq: 587.33, dur: 0.90, verseIdx: 3 }, // D5
+    ];
+
+    let startTime = ctx.currentTime;
+
+    melodyNotes.forEach((note) => {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc1.type = 'triangle'; // Warm flute tone
+      osc1.frequency.setValueAtTime(note.freq, startTime);
+
+      osc2.type = 'sine'; // Harp overtone
+      osc2.frequency.setValueAtTime(note.freq * 2, startTime);
+
+      gain.gain.setValueAtTime(0.2, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + note.dur);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc1.start(startTime);
+      osc2.start(startTime);
+      osc1.stop(startTime + note.dur);
+      osc2.stop(startTime + note.dur);
+
+      // Trigger verse update callback if speech synthesis is not active
+      if (!('speechSynthesis' in window) && onVerseChange) {
+        setTimeout(() => {
+          onVerseChange(verses[note.verseIdx], Math.min(100, (note.verseIdx + 1) * 25));
+        }, (startTime - ctx.currentTime) * 1000);
+      }
+
+      startTime += note.dur + 0.15;
+    });
+
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }
+
+  // Stop any active speech or long sound
+  public stopAudio() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+  }
 }
 
 export const soundManager = new SoundManager();

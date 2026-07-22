@@ -64,6 +64,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   const [songProgress, setSongProgress] = useState<number>(0);
   const [activeBeat, setActiveBeat] = useState<number>(1);
   const [songVerse, setSongVerse] = useState<string>('שִׁיר הַמַּעֲלוֹת לְדָוִד – שָׂמַחְתִּי בְּאֹמְרִים לִי בֵּית ה\' נֵלֵךְ!');
+  const [isPlayingSongAudio, setIsPlayingSongAudio] = useState<boolean>(false);
 
   // Hospitality & Demai Tithing Quiz State
   const [sharedWater, setSharedWater] = useState<boolean>(false);
@@ -83,6 +84,21 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
     return () => clearInterval(interval);
   }, [songProgress]);
 
+  const handlePlayFullSong = () => {
+    setIsPlayingSongAudio(true);
+    onAddStars(10);
+    soundManager.playSongOfAscents((verseText, progressPercent) => {
+      setSongVerse(verseText);
+      const prog = Math.round(progressPercent / 10);
+      setSongProgress((prev) => Math.max(prev, prog));
+      if (progressPercent >= 75) {
+        setIsPlayingSongAudio(false);
+        soundManager.playSuccess();
+        onCompleteTask('c2_song');
+      }
+    });
+  };
+
   const handleTapBeat = (beatNumber: number) => {
     if (beatNumber === activeBeat) {
       soundManager.playHarpNote(440 + beatNumber * 100);
@@ -90,10 +106,22 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
       setSongProgress(nextProgress);
       onAddStars(3);
 
+      let currentText = songVerse;
       if (nextProgress === 4) {
-        setSongVerse('עֹמְדוֹת הָיוּ רַגְלֵינוּ בִּשְׁעָרַיִךְ יְרוּשָׁלָםִ!');
+        currentText = 'עֹמְדוֹת הָיוּ רַגְלֵינוּ בִּשְׁעָרַיִךְ יְרוּשָׁלָםִ!';
+        setSongVerse(currentText);
       } else if (nextProgress === 8) {
-        setSongVerse('יְרוּשָׁלַםִ הַבְּנוּיָה כְּעִיר שֶׁחֻבְּרָה לָהּ יַחְדָּו!');
+        currentText = 'יְרוּשָׁלַםִ הַבְּנוּיָה כְּעִיר שֶׁחֻבְּרָה לָהּ יַחְדָּו!';
+        setSongVerse(currentText);
+      }
+
+      // Speak Hebrew verse aloud on beat click
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(currentText);
+        utterance.lang = 'he-IL';
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
       }
 
       if (nextProgress >= 10) {
@@ -186,11 +214,24 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
             </p>
 
             {/* Song Verse Box */}
-            <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-3 rounded-2xl mb-4 text-center shadow-sm">
+            <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-3 rounded-2xl mb-3 text-center shadow-sm">
               <p className="text-xs sm:text-sm font-serif-hebrew font-bold text-[#8B4513] leading-relaxed animate-pulse">
                 "{songVerse}"
               </p>
             </div>
+
+            {/* Play Audio Song Button */}
+            <button
+              onClick={handlePlayFullSong}
+              disabled={isPlayingSongAudio}
+              className={`w-full mb-4 py-2 px-3 rounded-xl font-black text-xs border-2 shadow-sm transition-all flex items-center justify-center gap-2 ${
+                isPlayingSongAudio
+                  ? 'bg-amber-300 text-[#8B4513] border-[#8B4513] animate-pulse'
+                  : 'bg-[#8B4513] hover:bg-[#5D4037] text-white border-[#FFD700] active:translate-y-0.5'
+              }`}
+            >
+              <span>{isPlayingSongAudio ? '🔊 מנגן ושר את השיר בקול...' : '🔊 השמע את השיר בנגינה ושירה בפועל 🎵'}</span>
+            </button>
 
             {/* Rhythm Buttons 1-4 */}
             <div className="grid grid-cols-4 gap-2 mb-4">

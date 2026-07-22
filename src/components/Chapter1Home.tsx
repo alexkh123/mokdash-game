@@ -125,12 +125,83 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
   ];
 
   // Task 3: Packing Backpack & Halakhic Prerequisites
-  const [packedGear, setPackedGear] = useState<{ id: string; name: string; icon: string; packed: boolean; halakhaRule: string }[]>([
-    { id: 'water', name: 'מימיית מים צוננים', icon: '🥤', packed: false, halakhaRule: 'חובה לשתות ולשמור על הבריאות בדרך העולה לירושלים' },
-    { id: 'garments', name: 'בגדי חג לבנים וטהורים', icon: '👔', packed: false, halakhaRule: 'חובה לעלות לרגל בבגדים נקיים ולבנים לכבוד החג' },
-    { id: 'sandals', name: 'סנדלי הליכה (ליציאה מהר הבית)', icon: '🥾', packed: false, halakhaRule: 'אסור להיכנס להר הבית במנעל עור, אך מותר ללכת בהם בדרך' },
-    { id: 'purse', name: 'צרור מטבעות מעשר שני', icon: '💰', packed: false, halakhaRule: 'פדיון פירות מעשר שני לקניית מזון ושמחה בירושלים' },
+  interface PackingItem {
+    id: string;
+    name: string;
+    icon: string;
+    packed: boolean;
+    halakhaRule: string;
+    question: string;
+    options: string[];
+    correctOption: number;
+    explanation: string;
+  }
+
+  const [packedGear, setPackedGear] = useState<PackingItem[]>([
+    {
+      id: 'water',
+      name: 'מימיית מים צוננים',
+      icon: '🥤',
+      packed: false,
+      halakhaRule: 'חובה לשתות ולשמור על הבריאות בדרך העולה לירושלים',
+      question: 'מדוע חשוב להצטייד במימיית מים צוננים למסע העלייה לרגל?',
+      options: [
+        'כי שמירת הגוף והבריאות בדרך לירושלים היא מצווה חשובה',
+        'כי אסור לשתות מים ממעיינות בדרך',
+        'כדי לצנן את הבהמות בלבד',
+      ],
+      correctOption: 0,
+      explanation: 'התורה ציוותה אותנו "ונשמרתם מאוד לנפשותיכם" - שמירת בריאות הגוף בעלייה לרגל היא חלק מעבודת השם!',
+    },
+    {
+      id: 'garments',
+      name: 'בגדי חג לבנים וטהורים',
+      icon: '👔',
+      packed: false,
+      halakhaRule: 'חובה לעלות לרגל בבגדים נקיים ולבנים לכבוד החג',
+      question: 'מדוע העולים לרגל לובשים בגדי חג לבנים ונקיים?',
+      options: [
+        'כי בגדי חג לבנים מבטאים כבוד למקדש, טהרה ושמחת יום טוב',
+        'כי אסור ללבוש בגדים צבעוניים כלל',
+        'כי הכהנים דרשו זאת מכל אדם',
+      ],
+      correctOption: 0,
+      explanation: 'נאמר "וכבסו שמלותם" - הופעה נקייה ומכובדת בבגדי חג לבנים היא מצווה לכבוד המקדש והשכינה.',
+    },
+    {
+      id: 'sandals',
+      name: 'סנדלי הליכה (ליציאה מהר הבית)',
+      icon: '🥾',
+      packed: false,
+      halakhaRule: 'אסור להיכנס להר הבית במנעל עור, אך מותר ללכת בהם בדרך',
+      question: 'מהי ההלכה לגבי נעילת מנעלי עור (סנדלים) בהר הבית?',
+      options: [
+        'מותר ללכת בהם בדרך, אך אסור להיכנס בהם להר הבית משום מורא מקדש',
+        'חובה להיכנס להר הבית בסנדלי עור בלבד',
+        'אסור לנעול נעליים בכלל אפילו בדרך לירושלים',
+      ],
+      correctOption: 0,
+      explanation: 'נאמר "של נעליך מעל רגליך" - להר הבית נכנסים יחפים או במנעל שאינו של עור משום כבוד המקדש!',
+    },
+    {
+      id: 'purse',
+      name: 'צרור מטבעות מעשר שני',
+      icon: '💰',
+      packed: false,
+      halakhaRule: 'פדיון פירות מעשר שני לקניית מזון ושמחה בירושלים',
+      question: 'כיצד מקיימים את מצוות מעשר שני בירושלים?',
+      options: [
+        'קונים במעות מזון, פירות ושלמי שמחה לאכול בשמחה בירושלים',
+        'נותנים את המטבעות לשומר בשער העיר',
+        'שורפים את המטבעות בבית הדשן',
+      ],
+      correctOption: 0,
+      explanation: 'מעשר שני נועד להיאכל בשמחה ובטהרה בירושלים כדי להרבות שמחה ולימוד תורה בעיר הקודש!',
+    },
   ]);
+
+  const [activePackQuestionId, setActivePackQuestionId] = useState<string | null>(null);
+  const [packFeedback, setPackFeedback] = useState<{ id: string; isCorrect: boolean; text: string } | null>(null);
 
   // Handle Ma'aser Calculation
   const handleAnswerCalc = (chosenOption: number) => {
@@ -189,16 +260,30 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
     }
   };
 
-  // Handle Packing Gear
-  const handlePackItem = (id: string) => {
-    soundManager.playClick();
-    const nextGear = packedGear.map((g) => (g.id === id ? { ...g, packed: true } : g));
-    setPackedGear(nextGear);
-    onAddStars(5);
+  // Handle Packing Question Answer
+  const handleAnswerPackQuestion = (itemId: string, optionIdx: number) => {
+    const item = packedGear.find((g) => g.id === itemId);
+    if (!item || item.packed) return;
 
-    if (nextGear.every((g) => g.packed)) {
-      soundManager.playSuccess();
-      onCompleteTask('c1_pack');
+    const isCorrect = optionIdx === item.correctOption;
+
+    if (isCorrect) {
+      soundManager.playCoin();
+      onAddCoins(10);
+      onAddStars(10);
+
+      const nextGear = packedGear.map((g) => (g.id === itemId ? { ...g, packed: true } : g));
+      setPackedGear(nextGear);
+      setPackFeedback({ id: itemId, isCorrect: true, text: `נכון מאד! ${item.explanation}` });
+      setActivePackQuestionId(null);
+
+      if (nextGear.every((g) => g.packed)) {
+        soundManager.playSuccess();
+        onCompleteTask('c1_pack');
+      }
+    } else {
+      soundManager.playClick();
+      setPackFeedback({ id: itemId, isCorrect: false, text: 'תשובה לא מדויקת. קרא את דין הטהרה ונסה שנית!' });
     }
   };
 
@@ -400,37 +485,94 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
             <h3 className="text-lg font-bold text-[#8B4513] mb-1">אריזת תרמיל המסע וטהרה</h3>
 
             <p className="text-xs text-[#5D4037] font-medium mb-3">
-              קרא את דין הטהרה וארוז כל חפץ הנדרש לעלייה לרגל:
+              ענה על השאלה ההלכתית עבור כל חפץ כדי לארוז אותו בתרמיל המסע:
             </p>
 
-            <div className="space-y-2 mb-4">
-              {packedGear.map((item) => (
-                <button
-                  key={item.id}
-                  disabled={item.packed}
-                  onClick={() => handlePackItem(item.id)}
-                  className={`w-full p-2.5 rounded-2xl border-2 text-right transition-all flex items-start gap-2.5 ${
-                    item.packed
-                      ? 'bg-amber-100/50 border-[#D2B48C] opacity-75'
-                      : 'bg-[#FDF6E3] hover:bg-[#FFD700] border-[#8B4513] shadow-sm active:translate-y-0.5'
-                  }`}
-                >
-                  <span className="text-2xl mt-0.5">{item.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <span className="text-xs font-bold text-[#8B4513] block">{item.name}</span>
-                    <span className="text-[10px] text-[#5D4037] font-medium block leading-tight mt-0.5">
-                      📜 {item.halakhaRule}
-                    </span>
+            <div className="space-y-3 mb-4">
+              {packedGear.map((item) => {
+                const isExpanded = activePackQuestionId === item.id;
+
+                return (
+                  <div
+                    key={item.id}
+                    className={`p-3 rounded-2xl border-2 transition-all ${
+                      item.packed
+                        ? 'bg-emerald-50/70 border-emerald-500'
+                        : isExpanded
+                        ? 'bg-[#FFD700]/20 border-[#8B4513] shadow-md'
+                        : 'bg-[#FDF6E3] hover:bg-[#FFD700]/30 border-[#D2B48C]'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-2.5 flex-1">
+                        <span className="text-2xl mt-0.5">{item.icon}</span>
+                        <div>
+                          <span className="text-xs font-bold text-[#8B4513] block">{item.name}</span>
+                          <span className="text-[10px] text-[#5D4037] font-medium block leading-tight mt-0.5">
+                            📜 {item.halakhaRule}
+                          </span>
+                        </div>
+                      </div>
+
+                      {item.packed ? (
+                        <span className="text-xs text-emerald-700 font-black flex items-center gap-1 shrink-0 bg-emerald-100 px-2 py-0.5 rounded-lg border border-emerald-400">
+                          <CheckCircle2 className="w-4 h-4" /> ארוז!
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            soundManager.playClick();
+                            setActivePackQuestionId(isExpanded ? null : item.id);
+                          }}
+                          className="text-[10px] bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1 rounded-xl font-bold shrink-0 transition-all active:translate-y-0.5"
+                        >
+                          {isExpanded ? 'סגור שאלה' : 'ענה וארוז ❓'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Question Box when expanded and not packed */}
+                    {!item.packed && (isExpanded || packedGear.filter(g => !g.packed)[0]?.id === item.id) && (
+                      <div className="mt-3 pt-3 border-t-2 border-[#D2B48C] bg-white/80 p-3 rounded-xl">
+                        <p className="text-xs font-black text-[#8B4513] mb-2 leading-snug">
+                          ❓ {item.question}
+                        </p>
+
+                        <div className="space-y-1.5">
+                          {item.options.map((opt, optIdx) => (
+                            <button
+                              key={optIdx}
+                              onClick={() => handleAnswerPackQuestion(item.id, optIdx)}
+                              className="w-full p-2 rounded-xl text-xs font-bold text-right bg-[#FDF6E3] hover:bg-[#FFD700] border border-[#8B4513] text-[#8B4513] transition-all leading-tight"
+                            >
+                              {opt}
+                            </button>
+                          ))}
+                        </div>
+
+                        {packFeedback && packFeedback.id === item.id && (
+                          <div
+                            className={`mt-2 p-2 rounded-xl text-[11px] font-bold ${
+                              packFeedback.isCorrect
+                                ? 'bg-emerald-100 text-emerald-900 border border-emerald-400'
+                                : 'bg-rose-100 text-rose-900 border border-rose-400'
+                            }`}
+                          >
+                            {packFeedback.text}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Packed Success Explanation */}
+                    {item.packed && (
+                      <p className="text-[10px] text-emerald-800 font-bold mt-2 pt-1 border-t border-emerald-200">
+                        💡 {item.explanation}
+                      </p>
+                    )}
                   </div>
-                  {item.packed ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-1 shrink-0" />
-                  ) : (
-                    <span className="text-[10px] bg-[#8B4513] text-white px-2 py-0.5 rounded-xl font-bold shrink-0">
-                      ארוז
-                    </span>
-                  )}
-                </button>
-              ))}
+                );
+              })}
             </div>
           </div>
 
