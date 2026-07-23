@@ -119,6 +119,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'סגור שאלה',
     c1QuizTitle: 'חידון הלכות קורבנות החג',
     c1QuizDesc: 'ענה על השאלות ההלכתיות כדי לחתום על מגילת קורבנות העלייה לרגל:',
+    skipChapter: '🛠️ השלם ודלג פרק',
+    celebrationTitle: '🏆 אשריך! השלמת את המסע לבית המקדש! 🏆',
+    celebrationDesc: 'למדת את מצוות פדיון מעשר שני, שרת את שירי המעלות בדרך, היטהרת במקווה, עזרת בלשכות המקדש, ניגנת עם הלוויים וחגגת בשמחת החג בירושלים!',
+    footerCopyright: 'המסע לבית המקדש © משחק לימודי חווייתי לעלייה לרגל ולמקדש',
   },
   en: {
     appTitle: 'Journey to the Temple',
@@ -220,6 +224,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'Close question',
     c1QuizTitle: 'Festival Sacrifice Laws Quiz',
     c1QuizDesc: 'Answer the halachic questions to sign the pilgrimage sacrifice scroll:',
+    skipChapter: '🛠️ Complete & Skip Chapter',
+    celebrationTitle: '🏆 Blessed are you! You completed the pilgrimage to the Holy Temple! 🏆',
+    celebrationDesc: 'You learned Ma\'aser redemption laws, sang songs of ascent on the road, purified in the mikveh, helped in Temple chambers, played with Levites, and celebrated festival joy in Jerusalem!',
+    footerCopyright: 'Journey to the Temple © Interactive Pilgrimage Educational Game',
   },
   ru: {
     appTitle: 'Путешествие в Иерусалимский Храм',
@@ -321,6 +329,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'Закрыть вопрос',
     c1QuizTitle: 'Викторина законов праздничных жертв',
     c1QuizDesc: 'Ответьте на вопросы галахи, чтобы подписать свиток жертв паломничества:',
+    skipChapter: '🛠️ Пропустить главу',
+    celebrationTitle: '🏆 Благословен ты! Ты завершил паломничество в Святой Храм! 🏆',
+    celebrationDesc: 'Ты изучил законы выкупа Второй десятины, воспел песни восхождения в пути, очистился в микве, помог в палатах Храма, играл с левитами и праздновал великую радость в Иерусалиме!',
+    footerCopyright: 'Путешествие в Иерусалимский Храм © Образовательная игра-путешествие паломника',
   },
   es: {
     appTitle: 'Viaje al Templo de Jerusalén',
@@ -422,6 +434,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'Cerrar pregunta',
     c1QuizTitle: 'Cuestionario de Leyes de Sacrificio',
     c1QuizDesc: 'Responde las preguntas halájicas para firmar el pergamino de sacrificios:',
+    skipChapter: '🛠️ Completar y Saltar',
+    celebrationTitle: '🏆 ¡Felicitaciones! ¡Completaste la peregrinación al Templo! 🏆',
+    celebrationDesc: 'Aprendiste las leyes del rescate del diezmo, cantaste cánticos en el camino, te purificaste en la mikvé, ayudaste en las cámaras del Templo, tocaste con los levitas y celebraste la alegría en Jerusalén.',
+    footerCopyright: 'Viaje al Templo © Juego educativo de peregrinación',
   },
   pt: {
     appTitle: 'Jornada ao Templo de Jerusalém',
@@ -523,6 +539,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'Fechar pergunta',
     c1QuizTitle: 'Quiz de Leis de Sacrifício',
     c1QuizDesc: 'Responda às perguntas haláchicas para assinar o pergaminho de sacrifícios:',
+    skipChapter: '🛠️ Completar e Pular',
+    celebrationTitle: '🏆 Parabéns! Você completou a peregrinação ao Templo! 🏆',
+    celebrationDesc: 'Você aprendeu as leis do resgate do dízimo, cantou cânticos no caminho, purificou-se na mikve, ajudou nas câmaras do Templo, tocou com os levitas e celebrou a alegria em Jerusalém.',
+    footerCopyright: 'Jornada ao Templo © Jogo educacional de peregrinação',
   },
   fr: {
     appTitle: 'Voyage au Temple de Jérusalem',
@@ -624,6 +644,10 @@ export const TRANSLATIONS: Record<SupportedLanguage, Record<string, string>> = {
     closeQuestion: 'Fermer la question',
     c1QuizTitle: 'Quiz des Lois de Sacrifice',
     c1QuizDesc: 'Répondez aux questions halakhiques pour signer le rouleau des sacrifices:',
+    skipChapter: '🛠️ Compléter et Sauter',
+    celebrationTitle: '🏆 Béni sois-tu ! Tu as achevé le pèlerinage au Saint Temple ! 🏆',
+    celebrationDesc: 'Tu as appris les lois du rachat de la dîme, chanté les cantiques sur la route, t\'es purifié au mikvé, aidé dans les salles du Temple, joué avec les lévites et célébré la joie à Jérusalem !',
+    footerCopyright: 'Voyage au Temple © Jeu éducatif de pèlerinage',
   },
 };
 

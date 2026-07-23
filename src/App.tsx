@@ -39,7 +39,7 @@ const CHAPTER_TASKS_MAP: Record<ChapterId, string[]> = {
 };
 
 export default function App() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const chaptersMeta = getLocalizedChapters(language);
 
   const [currentChapter, setCurrentChapter] = useState<ChapterId>(1);
@@ -221,9 +221,9 @@ export default function App() {
                 <button
                   onClick={() => handleCompleteCurrentChapter()}
                   className="text-xs bg-[#8B4513] hover:bg-[#5D4037] text-white px-3 py-1.5 rounded-xl font-extrabold flex items-center gap-1 shadow-[0_2px_0_#5D2E0A] transition-all active:translate-y-0.5 active:shadow-none"
-                  title="השלם משימות פרק זה ודלג לפרק הבא"
+                  title={t('skipChapter')}
                 >
-                  <span>🛠️ השלם ודלג פרק</span>
+                  <span>{t('skipChapter')}</span>
                 </button>
               )}
             </div>
@@ -241,10 +241,10 @@ export default function App() {
         {isCelebrating && (
           <div className="bg-[#FFD700] p-6 rounded-3xl text-[#8B4513] text-center border-4 border-[#8B4513] shadow-2xl animate-fadeIn">
             <h3 className="text-2xl sm:text-3xl font-black font-heading mb-2">
-              🏆 אשריך! השלמת את המסע לבית המקדש! 🏆
+              {t('celebrationTitle')}
             </h3>
             <p className="text-sm font-bold max-w-xl mx-auto leading-relaxed">
-              למדת את מצוות פדיון מעשר שני, שרת את שירי המעלות בדרך, היטהרת במקווה, עזרת בלשכות המקדש, ניגנת עם הלוויים וחגגת בשמחת החג בירושלים!
+              {t('celebrationDesc')}
             </p>
           </div>
         )}
@@ -361,7 +361,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="mt-auto border-t-4 border-[#8B4513] bg-[#8B4513] p-3 text-center text-xs font-bold text-white tracking-wide">
-        המסע לבית המקדש © משחק לימודי חווייתי לעלייה לרגל ולמקדש
+        {t('footerCopyright')}
       </footer>
 
     </div>
