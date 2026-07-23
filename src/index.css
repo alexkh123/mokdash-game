@@ -2,14 +2,17 @@
 
 @layer base {
   body {
-    font-family: 'Assistant', 'Rubik', sans-serif;
+    font-family: 'Fredoka', 'Rubik', 'Varela Round', 'Assistant', sans-serif;
     background-color: #FDF6E3;
-    color: #5D4037;
+    color: #4A2E1B;
+    font-size: 16px;
+    line-height: 1.6;
   }
   
-  h1, h2, h3, .font-heading {
-    font-family: 'Rubik', 'Assistant', sans-serif;
-    color: #8B4513;
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Fredoka', 'Rubik', sans-serif;
+    color: #653008;
+    letter-spacing: -0.01em;
   }
 
   .font-serif-hebrew {
@@ -17,22 +20,54 @@
   }
 }
 
+/* 3D Kid-Game Button and Card Utilities */
+.btn-pop {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 0 #653008;
+}
+.btn-pop:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #653008;
+}
+.btn-pop:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #653008;
+}
+
+.btn-pop-green {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 0 #15803D;
+}
+.btn-pop-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #15803D;
+}
+.btn-pop-green:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #15803D;
+}
+
+.card-pop {
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 20px -4px rgba(101, 48, 8, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
 /* Custom scrollbars matching Vibrant theme */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }
 ::-webkit-scrollbar-track {
   background: #FDF6E3;
   border-left: 2px solid #D2B48C;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D2B48C;
-  border: 2px solid #8B4513;
-  border-radius: 8px;
+  background: #FFB703;
+  border: 2px solid #653008;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #8B4513;
+  background: #FB8500;
 }
 
 @keyframes float-gentle {

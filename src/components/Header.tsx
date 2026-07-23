@@ -72,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Chapter Stepper */}
-        <div className="flex items-center gap-1 md:gap-2 overflow-x-auto max-w-full py-1 no-scrollbar">
+        <div className="flex items-center gap-1.5 md:gap-2 overflow-x-auto max-w-full py-1 no-scrollbar">
           {localizedChapters.map((meta) => {
             const isActive = meta.id === currentChapter;
             const isPassed = meta.id < currentChapter;
@@ -88,23 +88,23 @@ export const Header: React.FC<HeaderProps> = ({
                   soundManager.playClick();
                   onSelectChapter(meta.id);
                 }}
-                className={`relative px-2.5 py-1 md:px-3.5 md:py-1.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap ${
+                className={`relative px-3 py-1.5 md:px-4 md:py-2 rounded-2xl text-sm font-extrabold transition-all duration-200 flex items-center gap-2 whitespace-nowrap border-2 ${
                   isActive
-                    ? 'bg-[#8B4513] text-white shadow-md border-2 border-[#8B4513] scale-105'
+                    ? 'bg-[#8B4513] text-white border-[#5D2E0A] shadow-[0_4px_0_#5D2E0A] scale-105'
                     : isPassed
-                    ? 'bg-[#FFF9E5] text-[#8B4513] hover:bg-[#FFD700] border-2 border-[#D2B48C]'
+                    ? 'bg-[#FFF9E5] text-[#8B4513] hover:bg-[#FFD700] border-[#8B4513] shadow-[0_3px_0_#8B4513]'
                     : canSelect
-                    ? 'bg-[#FDF6E3] text-[#8B4513]/80 hover:bg-[#FFF9E5] border-2 border-[#D2B48C]'
-                    : 'bg-[#FDF6E3]/50 text-[#8B4513]/30 border-2 border-[#D2B48C]/30 cursor-not-allowed opacity-60'
+                    ? 'bg-[#FDF6E3] text-[#8B4513] hover:bg-[#FFF9E5] border-[#8B4513] shadow-[0_3px_0_#8B4513]'
+                    : 'bg-[#FDF6E3]/60 text-[#8B4513]/40 border-gray-300 cursor-not-allowed opacity-60'
                 }`}
                 title={canSelect ? meta.title : `${meta.title} (${t('lockedChapter', 'נעול')})`}
               >
-                <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${
-                  isActive ? 'bg-[#FFD700] text-[#8B4513]' : isPassed ? 'bg-[#8B4513] text-white' : canSelect ? 'bg-[#D2B48C] text-[#8B4513]' : 'bg-gray-300 text-gray-500'
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-black border ${
+                  isActive ? 'bg-[#FFD700] text-[#8B4513] border-[#8B4513]' : isPassed ? 'bg-[#8B4513] text-white border-white' : canSelect ? 'bg-[#FFD700] text-[#8B4513] border-[#8B4513]' : 'bg-gray-300 text-gray-500 border-gray-400'
                 }`}>
                   {canSelect ? meta.id : '🔒'}
                 </span>
-                <span className="hidden lg:inline">{meta.subTitle}</span>
+                <span className="hidden lg:inline font-bold text-sm">{meta.subTitle}</span>
               </button>
             );
           })}
@@ -156,14 +156,14 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Stats Desktop */}
-          <div className="hidden md:flex items-center gap-3 bg-white px-3 py-1.5 rounded-2xl border-2 border-[#8B4513] shadow-sm">
-            <div className="flex items-center gap-1.5 text-[#8B4513] font-bold text-sm" title={t('coins', 'מטבעות')}>
-              <Coins className="w-4 h-4 text-amber-600 animate-pulse" />
+          <div className="hidden md:flex items-center gap-3 bg-white px-3.5 py-1.5 rounded-2xl border-2 border-[#8B4513] shadow-[0_3px_0_#8B4513]">
+            <div className="flex items-center gap-1.5 text-[#8B4513] font-black text-base" title={t('coins', 'מטבעות')}>
+              <Coins className="w-5 h-5 text-amber-600 animate-pulse" />
               <span>{coins}</span>
             </div>
-            <div className="w-0.5 h-4 bg-[#8B4513]/30" />
-            <div className="flex items-center gap-1.5 text-[#8B4513] font-bold text-sm" title={t('stars', 'כוכבי חכמה')}>
-              <Sparkles className="w-4 h-4 text-amber-500" />
+            <div className="w-0.5 h-5 bg-[#8B4513]/30" />
+            <div className="flex items-center gap-1.5 text-[#8B4513] font-black text-base" title={t('stars', 'כוכבי חכמה')}>
+              <Sparkles className="w-5 h-5 text-amber-500" />
               <span>{stars}</span>
             </div>
           </div>
@@ -174,10 +174,10 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenCodex();
             }}
-            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl text-xs font-bold border-2 border-[#8B4513] shadow-sm transition-all active:translate-y-0.5"
+            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-3 py-1.5 md:px-3.5 md:py-2 rounded-2xl text-xs md:text-sm font-extrabold border-2 border-[#8B4513] shadow-[0_3px_0_#8B4513] transition-all active:translate-y-0.5 active:shadow-none"
             title={t('codex', 'ספר ההלכות')}
           >
-            <BookOpen className="w-4 h-4 text-[#8B4513]" />
+            <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-[#8B4513]" />
             <span className="hidden sm:inline">{t('codex', 'ספר ההלכות')}</span>
           </button>
 
@@ -187,10 +187,10 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenBackpack();
             }}
-            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl text-xs font-bold border-2 border-[#8B4513] shadow-sm transition-all active:translate-y-0.5"
+            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-3 py-1.5 md:px-3.5 md:py-2 rounded-2xl text-xs md:text-sm font-extrabold border-2 border-[#8B4513] shadow-[0_3px_0_#8B4513] transition-all active:translate-y-0.5 active:shadow-none"
             title={t('backpack', 'תרמיל מסע')}
           >
-            <Backpack className="w-4 h-4 text-[#8B4513]" />
+            <Backpack className="w-4 h-4 md:w-5 md:h-5 text-[#8B4513]" />
             <span className="hidden sm:inline">{t('backpack', 'תרמיל')}</span>
           </button>
 
@@ -200,10 +200,10 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenBadges();
             }}
-            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl text-xs font-bold border-2 border-[#8B4513] shadow-sm transition-all active:translate-y-0.5"
+            className="flex items-center gap-1.5 bg-[#FFF9E5] hover:bg-[#FFD700] text-[#8B4513] px-3 py-1.5 md:px-3.5 md:py-2 rounded-2xl text-xs md:text-sm font-extrabold border-2 border-[#8B4513] shadow-[0_3px_0_#8B4513] transition-all active:translate-y-0.5 active:shadow-none"
             title={t('badges', 'אותות ועיטורים')}
           >
-            <Award className="w-4 h-4 text-[#8B4513]" />
+            <Award className="w-4 h-4 md:w-5 md:h-5 text-[#8B4513]" />
             <span className="hidden sm:inline">{t('badges', 'עיטורים')}</span>
           </button>
 

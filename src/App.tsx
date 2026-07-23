@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { ChapterId, InventoryItem, Badge, HalachaTerm } from './types';
-import { CHAPTERS_META, INITIAL_INVENTORY } from './data/chaptersData';
+import { getLocalizedChapters, INITIAL_INVENTORY } from './data/chaptersData';
 import { HALACHA_TERMS } from './data/halachaCodex';
 import { soundManager } from './utils/audio';
+import { useLanguage } from './context/LanguageContext';
 
 import { Header } from './components/Header';
 import { VisualCanvas } from './components/VisualCanvas';
@@ -38,6 +39,9 @@ const CHAPTER_TASKS_MAP: Record<ChapterId, string[]> = {
 };
 
 export default function App() {
+  const { language } = useLanguage();
+  const chaptersMeta = getLocalizedChapters(language);
+
   const [currentChapter, setCurrentChapter] = useState<ChapterId>(1);
   const [maxUnlockedChapter, setMaxUnlockedChapter] = useState<ChapterId>(1);
   const [coins, setCoins] = useState<number>(0);
@@ -46,7 +50,7 @@ export default function App() {
 
   const [inventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
   const [badges, setBadges] = useState<Badge[]>(
-    CHAPTERS_META.map((meta) => meta.badgeAwarded)
+    chaptersMeta.map((meta) => meta.badgeAwarded)
   );
   const [codex, setCodex] = useState<HalachaTerm[]>(HALACHA_TERMS);
 
@@ -104,7 +108,7 @@ export default function App() {
       );
 
       // Check if all tasks of current chapter are completed -> Unlock chapter badge!
-      const currentMeta = CHAPTERS_META.find((m) => m.id === currentChapter);
+      const currentMeta = chaptersMeta.find((m) => m.id === currentChapter);
       if (currentMeta) {
         const chapterTaskIds = currentMeta.tasks.map((t) => t.id);
         const allDone = chapterTaskIds.every((id) => id === taskId || completedTasks.includes(id));
@@ -166,11 +170,11 @@ export default function App() {
     setStars(0);
     setCompletedTasks([]);
     setIsCelebrating(false);
-    setBadges(CHAPTERS_META.map((meta) => meta.badgeAwarded));
+    setBadges(chaptersMeta.map((meta) => meta.badgeAwarded));
     setCodex(HALACHA_TERMS);
   };
 
-  const currentMeta = CHAPTERS_META.find((m) => m.id === currentChapter)!;
+  const currentMeta = chaptersMeta.find((m) => m.id === currentChapter)!;
 
   return (
     <div className="min-h-screen bg-[#FDF6E3] text-[#5D4037] flex flex-col font-sans selection:bg-[#FFD700] selection:text-[#8B4513] border-2 sm:border-8 border-[#8B4513]">
@@ -203,30 +207,30 @@ export default function App() {
           <VisualCanvas chapterId={currentChapter} isCelebrating={isCelebrating} />
 
           {/* Foreground Overlay Content */}
-          <div className="relative z-10 bg-[#FFF9E5]/95 backdrop-blur-md p-4 sm:p-5 rounded-2xl border-4 border-[#8B4513] max-w-2xl shadow-md">
-            <div className="flex items-center justify-between gap-2 mb-1 flex-wrap">
+          <div className="relative z-10 bg-[#FFF9E5]/95 backdrop-blur-md p-5 sm:p-6 rounded-3xl border-4 border-[#8B4513] max-w-2xl shadow-[0_6px_0_#8B4513]">
+            <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
               <div className="flex items-center gap-2">
-                <span className="text-xs bg-[#8B4513] text-white font-black px-3 py-1 rounded-xl">
+                <span className="text-sm bg-[#8B4513] text-white font-black px-3.5 py-1 rounded-2xl shadow-sm">
                   {currentMeta.title}
                 </span>
-                <span className="text-xs text-[#8B4513] font-bold">📍 {currentMeta.locationName}</span>
+                <span className="text-sm text-[#8B4513] font-extrabold bg-[#FFD700] px-3 py-1 rounded-2xl border border-[#8B4513]">📍 {currentMeta.locationName}</span>
               </div>
               
               {/* Quick Dev Mode Skip Button */}
               {import.meta.env.DEV && (
                 <button
                   onClick={() => handleCompleteCurrentChapter()}
-                  className="text-[11px] bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition-all"
+                  className="text-xs bg-[#8B4513] hover:bg-[#5D4037] text-white px-3 py-1.5 rounded-xl font-extrabold flex items-center gap-1 shadow-[0_2px_0_#5D2E0A] transition-all active:translate-y-0.5 active:shadow-none"
                   title="השלם משימות פרק זה ודלג לפרק הבא"
                 >
                   <span>🛠️ השלם ודלג פרק</span>
                 </button>
               )}
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-[#8B4513] font-heading mb-1">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#8B4513] font-heading mb-2 leading-tight">
               {currentMeta.subTitle}
             </h2>
-            <p className="text-xs sm:text-sm text-[#5D4037] font-medium leading-relaxed">
+            <p className="text-sm sm:text-base md:text-lg text-[#5D4037] font-semibold leading-relaxed">
               {currentMeta.description}
             </p>
           </div>

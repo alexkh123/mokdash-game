@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChapterId } from '../types';
-import { CHAPTERS_META } from '../data/chaptersData';
+import { getLocalizedChapters } from '../data/chaptersData';
 import { Sparkles, Coins, HelpCircle, X, ChevronRight, BookOpen, Award, MessageCircle } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { useLanguage, SupportedLanguage } from '../context/LanguageContext';
@@ -220,10 +220,11 @@ export const PriestCompanion: React.FC<PriestCompanionProps> = ({
   completedTasksCount,
 }) => {
   const { language, t } = useLanguage();
+  const chaptersMeta = getLocalizedChapters(language);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<'advice' | 'coins_info' | 'rank'>('advice');
 
-  const currentChapterMeta = CHAPTERS_META.find((m) => m.id === currentChapter)!;
+  const currentChapterMeta = chaptersMeta.find((m) => m.id === currentChapter)!;
   const wisdom = WISDOM_MULTILINGUAL[language]?.[currentChapter] || WISDOM_MULTILINGUAL['he'][currentChapter];
 
   // Calculate Title / Rank based on Stars

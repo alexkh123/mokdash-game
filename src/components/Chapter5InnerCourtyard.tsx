@@ -129,6 +129,8 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
   };
 
   const handleAnswerStairsQuiz = (optIdx: number) => {
+    if (selectedStairsOption === stairsQuestion.correctOption) return;
+
     setSelectedStairsOption(optIdx);
     setStairsQuizAnswered(true);
 
@@ -151,13 +153,15 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
     setLogsPlaced(nextCount);
     onAddStars(4);
 
-    if (nextCount >= 4 && altarQuizAnswered) {
+    if (nextCount >= 4 && altarQuizAnswered && selectedAltarOption === altarQuestion.correctOption) {
       soundManager.playSuccess();
       onCompleteTask('c5_altar_logs');
     }
   };
 
   const handleAnswerAltarQuiz = (optIdx: number) => {
+    if (selectedAltarOption === altarQuestion.correctOption) return;
+
     setSelectedAltarOption(optIdx);
     setAltarQuizAnswered(true);
 
@@ -264,20 +268,20 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
               <div className="space-y-1">
                 {stairsQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedStairsOption === optIdx;
-                  const isCorrectOpt = optIdx === stairsQuestion.correctOption;
+                  const isStairsCorrect = selectedStairsOption === stairsQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={stairsQuizAnswered}
+                      disabled={isStairsCorrect}
                       onClick={() => handleAnswerStairsQuiz(optIdx)}
                       className={`w-full p-1.5 rounded-xl text-xs font-bold text-right transition-all border ${
-                        stairsQuizAnswered
-                          ? isCorrectOpt
+                        isStairsCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -288,15 +292,22 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
               </div>
 
               {stairsQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
-                  💡 "חמש עשרה מעלות עולות מתוכה לתוך עזרת ישראל, כנגד חמש עשרה שיר המעלות שבתהילים, שעליהן הלוויים אומרים בשיר"!
-                </p>
+                selectedStairsOption === stairsQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
+                    💡 "חמש עשרה מעלות עולות מתוכה לתוך עזרת ישראל, כנגד חמש עשרה שיר המעלות שבתהילים, שעליהן הלוויים אומרים בשיר"!
+                  </p>
+                ) : (
+                  <div className="mt-1.5 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>תשובה שגויה! נסה שנית.</span>
+                  </div>
+                )
               )}
             </div>
           </div>
 
           <div className="text-xs bg-[#FDF6E3] p-2 rounded-xl border-2 border-[#D2B48C] text-[#8B4513] text-center font-bold">
-            סטטוס: {playedHarp && playedLyre && playedCymbals && stairsQuizAnswered ? 'הושלם בהצטיינות!' : 'נגן בכל הכלים וענה על השאלה'}
+            סטטוס: {playedHarp && playedLyre && playedCymbals && selectedStairsOption === stairsQuestion.correctOption ? 'הושלם בהצטיינות!' : 'נגן בכל הכלים וענה על השאלה'}
           </div>
         </div>
 
@@ -344,20 +355,20 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
               <div className="space-y-1">
                 {altarQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedAltarOption === optIdx;
-                  const isCorrectOpt = optIdx === altarQuestion.correctOption;
+                  const isAltarCorrect = selectedAltarOption === altarQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={altarQuizAnswered}
+                      disabled={isAltarCorrect}
                       onClick={() => handleAnswerAltarQuiz(optIdx)}
                       className={`w-full p-1.5 rounded-xl text-xs font-bold text-right transition-all border ${
-                        altarQuizAnswered
-                          ? isCorrectOpt
+                        isAltarCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -368,9 +379,16 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
               </div>
 
               {altarQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
-                  💡 לפי המשנה במסכת יומא פ"ד: "בשלוש מערכות היה המזבח נעשה בו ביום - מערכה גדולה, מערכה שנייה של קטורת, ומערכה שלישית של קיום האש"!
-                </p>
+                selectedAltarOption === altarQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
+                    💡 לפי המשנה במסכת יומא פ"ד: "בשלוש מערכות היה המזבח נעשה בו ביום - מערכה גדולה, מערכה שנייה של קטורת, ומערכה שלישית של קיום האש"!
+                  </p>
+                ) : (
+                  <div className="mt-1.5 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>תשובה שגויה! נסה שנית.</span>
+                  </div>
+                )
               )}
             </div>
           </div>

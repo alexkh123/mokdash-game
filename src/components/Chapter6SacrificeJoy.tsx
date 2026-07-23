@@ -116,6 +116,8 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
   };
 
   const handleAnswerSemichahQuiz = (optIdx: number) => {
+    if (selectedSemichahOption === semichahQuestion.correctOption) return;
+
     setSelectedSemichahOption(optIdx);
     setSemichahQuizAnswered(true);
 
@@ -156,6 +158,8 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
   };
 
   const handleAnswerSimchahQuiz = (optIdx: number) => {
+    if (selectedSimchahOption === simchahQuestion.correctOption) return;
+
     setSelectedSimchahOption(optIdx);
     setSimchahQuizAnswered(true);
 
@@ -233,20 +237,20 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
               <div className="space-y-1">
                 {semichahQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedSemichahOption === optIdx;
-                  const isCorrectOpt = optIdx === semichahQuestion.correctOption;
+                  const isSemichahCorrect = selectedSemichahOption === semichahQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={semichahQuizAnswered}
+                      disabled={isSemichahCorrect}
                       onClick={() => handleAnswerSemichahQuiz(optIdx)}
                       className={`w-full p-1.5 rounded-xl text-xs font-bold text-right transition-all border ${
-                        semichahQuizAnswered
-                          ? isCorrectOpt
+                        isSemichahCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -257,9 +261,16 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
               </div>
 
               {semichahQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
-                  💡 לפי המשנה במסכת מנחות: "מניח שתי ידיו בין שתי קרניו... וסומך בכל כוחו"!
-                </p>
+                selectedSemichahOption === semichahQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
+                    💡 לפי המשנה במסכת מנחות: "מניח שתי ידיו בין שתי קרניו... וסומך בכל כוחו"!
+                  </p>
+                ) : (
+                  <div className="mt-1.5 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>תשובה שגויה! נסה שנית.</span>
+                  </div>
+                )
               )}
             </div>
           </div>
@@ -374,20 +385,20 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
               <div className="space-y-1">
                 {simchahQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedSimchahOption === optIdx;
-                  const isCorrectOpt = optIdx === simchahQuestion.correctOption;
+                  const isSimchahCorrect = selectedSimchahOption === simchahQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={simchahQuizAnswered}
+                      disabled={isSimchahCorrect}
                       onClick={() => handleAnswerSimchahQuiz(optIdx)}
                       className={`w-full p-1.5 rounded-xl text-xs font-bold text-right transition-all border ${
-                        simchahQuizAnswered
-                          ? isCorrectOpt
+                        isSimchahCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -396,6 +407,19 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
                   );
                 })}
               </div>
+
+              {simchahQuizAnswered && (
+                selectedSimchahOption === simchahQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
+                    💡 נכון מאד! ניסוך המים בחג הסוכות מביא ברכה למים של כל השנה.
+                  </p>
+                ) : (
+                  <div className="mt-1.5 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>תשובה שגויה! נסה שנית.</span>
+                  </div>
+                )
+              )}
             </div>
           </div>
 

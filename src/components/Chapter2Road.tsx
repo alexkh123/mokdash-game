@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Music, CheckCircle2, ArrowLeft, Heart, Compass, Sparkles, HelpCircle, Check, X } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { getChapter2Questions } from '../data/localizedQuestions';
 import { shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_2_BONUS_QUESTIONS: BonusQuestion[] = [
@@ -65,6 +66,8 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
 }) => {
   const { language, t } = useLanguage();
   const chapterContent = getChapterContent(language);
+  const localizedQ = useMemo(() => getChapter2Questions(language), [language]);
+
   // Rhythm Song Game State
   const [songProgress, setSongProgress] = useState<number>(0);
   const [activeBeat, setActiveBeat] = useState<number>(1);
@@ -75,28 +78,14 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   const [sharedWater, setSharedWater] = useState<boolean>(false);
   const [demaiQuizAnswered, setDemaiQuizAnswered] = useState<boolean>(false);
   const [selectedDemaiOption, setSelectedDemaiOption] = useState<number | null>(null);
-  const [demaiQuestion] = useState(() => shuffleQuestion({
-    question: "❓ אתגר הלכה: כשמתארחים בפונדק דרכים אצל 'עם הארץ', מה חייבים לעשר מספק?",
-    options: [
-      'אינו צריך לעשר כלל כי הארח בחזקת כשרות',
-      'מעשר שני ותרומת מעשר בלבד (דין דמאי)',
-      'חייב להפריש תרומה גדולה בלבד',
-    ],
-    correctOption: 1,
-  }));
+
+  const demaiQuestion = useMemo(() => shuffleQuestion(localizedQ.demaiQuestion), [localizedQ.demaiQuestion]);
 
   // Pilgrimage Halakhot Overlook Trivia State
   const [overlookQuizAnswered, setOverlookQuizAnswered] = useState<boolean>(false);
   const [selectedOverlookOption, setSelectedOverlookOption] = useState<number | null>(null);
-  const [overlookQuestion] = useState(() => shuffleQuestion({
-    question: '❓ מי מהבאים פטור ממצוות "עולת ראייה" מן התורה?',
-    options: [
-      'חרש, שוטה, קטן, ומי שאינו יכול לעלות ברגליו',
-      'מי שאין לו קרקע בארץ ישראל בלבד',
-      'רק מי שעלה לרגל בשנה שעברה',
-    ],
-    correctOption: 0,
-  }));
+
+  const overlookQuestion = useMemo(() => shuffleQuestion(localizedQ.overlookQuestion), [localizedQ.overlookQuestion]);
 
   // Rhythm beat ticker
   useEffect(() => {
@@ -166,6 +155,8 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   };
 
   const handleAnswerDemaiQuiz = (optIdx: number) => {
+    if (selectedDemaiOption === demaiQuestion.correctOption) return;
+
     setSelectedDemaiOption(optIdx);
     setDemaiQuizAnswered(true);
 
@@ -182,6 +173,8 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   };
 
   const handleAnswerOverlookQuiz = (optIdx: number) => {
+    if (selectedOverlookOption === overlookQuestion.correctOption) return;
+
     setSelectedOverlookOption(optIdx);
     setOverlookQuizAnswered(true);
 
@@ -219,21 +212,21 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
           <div>
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#D2B48C] pb-2">
               <span className="text-xs font-bold bg-[#8B4513] text-white px-3 py-1 rounded-xl">
-                משימה 1
+                {t('mission', 'משימה')} 1
               </span>
               {completedTasks.includes('c2_song') && (
                 <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> הושלם!
+                  <CheckCircle2 className="w-4 h-4" /> {t('taskCompleted', 'הושלם!')}
                 </span>
               )}
             </div>
 
             <h3 className="text-lg font-bold text-[#8B4513] mb-1 flex items-center gap-2">
-              <Music className="w-5 h-5 text-[#8B4513]" /> שירת שירי המעלות
+              <Music className="w-5 h-5 text-[#8B4513]" /> {t('c2SongTitle', 'שירת שירי המעלות')}
             </h3>
 
             <p className="text-xs text-[#5D4037] font-medium mb-3">
-              לחץ על התוף המוזהב כשהוא מהבהב בקצב כדי לשיר עם השיירה העולה לירושלים:
+              {t('c2SongDesc', 'לחץ על התוף המוזהב כשהוא מהבהב בקצב כדי לשיר עם השיירה העולה לירושלים:')}
             </p>
 
             {/* Song Verse Box */}
@@ -253,7 +246,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
                   : 'bg-[#8B4513] hover:bg-[#5D4037] text-white border-[#FFD700] active:translate-y-0.5'
               }`}
             >
-              <span>{isPlayingSongAudio ? '🔊 מנגן ושר את השיר בקול...' : '🔊 השמע את השיר בנגינה ושירה בפועל 🎵'}</span>
+              <span>{isPlayingSongAudio ? t('songPlaying', '🔊 מנגן ושר את השיר בקול...') : t('playSongBtn', '🔊 השמע את השיר בנגינה ושירה בפועל 🎵')}</span>
             </button>
 
             {/* Rhythm Buttons 1-4 */}
@@ -280,7 +273,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
 
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs text-[#8B4513] font-bold">
-              <span>התקדמות השיר</span>
+              <span>{t('songProgress', 'התקדמות השיר')}</span>
               <span>{Math.min(100, songProgress * 10)}%</span>
             </div>
             <div className="w-full bg-[#FDF6E3] h-3 rounded-full overflow-hidden border-2 border-[#8B4513]">
@@ -297,21 +290,21 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
           <div>
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#D2B48C] pb-2">
               <span className="text-xs font-bold bg-[#8B4513] text-white px-3 py-1 rounded-xl">
-                משימה 2
+                {t('mission', 'משימה')} 2
               </span>
               {completedTasks.includes('c2_hospitality') && (
                 <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> הושלם!
+                  <CheckCircle2 className="w-4 h-4" /> {t('taskCompleted', 'הושלם!')}
                 </span>
               )}
             </div>
 
             <h3 className="text-lg font-bold text-[#8B4513] mb-1 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-red-600" /> הכנסת אורחים והלכות דמאי
+              <Heart className="w-5 h-5 text-red-600" /> {t('c2HospitalityTitle', 'הכנסת אורחים והלכות דמאי')}
             </h3>
 
             <p className="text-xs text-[#5D4037] font-medium mb-3">
-              שתף מים עם הנוסעים וענה על שאלה בהלכות פירות פונדק ("דמאי"):
+              {t('c2HospitalityDesc', 'שתף מים с הנוסעים וענה על שאלה בהלכות פירות פונדק ("דמאי"):')}
             </p>
 
             <button
@@ -326,11 +319,11 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               <div className="flex items-center gap-2">
                 <span className="text-2xl">🥤</span>
                 <div>
-                  <span className="text-xs font-bold text-[#8B4513] block">השקה מים קרים לעולים לרגל</span>
-                  <span className="text-[10px] text-[#5D4037]">מצוות הכנסת אורחים במעלה ההר</span>
+                  <span className="text-xs font-bold text-[#8B4513] block">{t('serveWaterBtn', 'השקה מים קרים לעולים לרגל')}</span>
+                  <span className="text-[10px] text-[#5D4037]">{t('serveWaterSub', 'מצוות הכנסת אורחים במעלה ההר')}</span>
                 </div>
               </div>
-              {sharedWater ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <span className="text-[10px] bg-[#8B4513] text-white px-2 py-0.5 rounded-xl font-bold">שתף מים</span>}
+              {sharedWater ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <span className="text-[10px] bg-[#8B4513] text-white px-2 py-0.5 rounded-xl font-bold">{t('shareWaterTag', 'שתף מים')}</span>}
             </button>
 
             {/* Demai Quiz Box */}
@@ -342,20 +335,20 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               <div className="space-y-1.5">
                 {demaiQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedDemaiOption === optIdx;
-                  const isCorrectOpt = optIdx === demaiQuestion.correctOption;
+                  const isDemaiCorrect = selectedDemaiOption === demaiQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={demaiQuizAnswered}
+                      disabled={isDemaiCorrect}
                       onClick={() => handleAnswerDemaiQuiz(optIdx)}
                       className={`w-full p-2 rounded-xl text-xs font-bold text-right transition-all border ${
-                        demaiQuizAnswered
-                          ? isCorrectOpt
+                        isDemaiCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -366,15 +359,22 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               </div>
 
               {demaiQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-2 pt-1 border-t border-[#D2B48C]">
-                  💡 לפי המשנה במסכת דמאי: עמי הארץ נחשדו שלא להפריש מעשר שני ותרומת מעשר, ולכן האוכל אצלם מעשר דמאי!
-                </p>
+                selectedDemaiOption === demaiQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-2 pt-1 border-t border-[#D2B48C]">
+                    💡 {t('demaiExplanation', 'לפי המשנה במסכת דמאי: עמי הארץ נחשדו שלא להפריש מעשר שני ותרומת מעשר, ולכן האוכל אצלם מעשר דמאי!')}
+                  </p>
+                ) : (
+                  <div className="mt-2 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>{t('incorrect', 'תשובה שגויה! נסה שנית.')}</span>
+                  </div>
+                )
               )}
             </div>
           </div>
 
           <div className="text-xs bg-[#FDF6E3] p-2.5 rounded-xl border-2 border-[#D2B48C] text-[#8B4513] text-center font-bold">
-            סטטוס: {sharedWater && demaiQuizAnswered ? 'הושלם בהצטיינות!' : 'השקה מים וענה על שאלת דמאי'}
+            {t('statusLabel', 'סטטוס')}: {sharedWater && demaiQuizAnswered ? t('completedExcellence', 'הושלם בהצטיינות!') : t('hospitalityPrompt', 'השקה מים וענה על שאלת דמאי')}
           </div>
         </div>
 
@@ -383,21 +383,21 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
           <div>
             <div className="flex items-center justify-between mb-3 border-b-2 border-[#D2B48C] pb-2">
               <span className="text-xs font-bold bg-[#8B4513] text-white px-3 py-1 rounded-xl">
-                משימה 3
+                {t('mission', 'משימה')} 3
               </span>
               {completedTasks.includes('c2_overlook') && (
                 <span className="text-xs text-emerald-700 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> הושלם!
+                  <CheckCircle2 className="w-4 h-4" /> {t('taskCompleted', 'הושלם!')}
                 </span>
               )}
             </div>
 
             <h3 className="text-lg font-bold text-[#8B4513] mb-1 flex items-center gap-2">
-              <Compass className="w-5 h-5 text-[#8B4513]" /> תצפית הר הצופים והלכות הראייה
+              <Compass className="w-5 h-5 text-[#8B4513]" /> {t('c2OverlookTitle', 'תצפית הר הצופים והלכות הראייה')}
             </h3>
 
             <p className="text-xs text-[#5D4037] font-medium mb-3">
-              מול חומות ירושלים, ענה על שאלת המשנה במסכת חגיגה (פ"א מ"א):
+              {t('c2OverlookDesc', 'מול חומות ירושלים, ענה על שאלת המשנה במסכת חגיגה (פ"א מ"א):')}
             </p>
 
             {/* Overlook Quiz Box */}
@@ -409,20 +409,20 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               <div className="space-y-1.5">
                 {overlookQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedOverlookOption === optIdx;
-                  const isCorrectOpt = optIdx === overlookQuestion.correctOption;
+                  const isOverlookCorrect = selectedOverlookOption === overlookQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={overlookQuizAnswered}
+                      disabled={isOverlookCorrect}
                       onClick={() => handleAnswerOverlookQuiz(optIdx)}
                       className={`w-full p-2 rounded-xl text-xs font-bold text-right transition-all border ${
-                        overlookQuizAnswered
-                          ? isCorrectOpt
+                        isOverlookCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -433,9 +433,16 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
               </div>
 
               {overlookQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-2 pt-1 border-t border-[#D2B48C]">
-                  💡 "הכל חייבין בראייה, חוץ מחרש שוטה וקטן... ומי שאינו יכול לעלות ברגליו"!
-                </p>
+                selectedOverlookOption === overlookQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-2 pt-1 border-t border-[#D2B48C]">
+                    💡 {t('overlookExplanation', '"הכל חייבין בראייה, חוץ מחרש שוטה וקטן... ומי שאינו יכול לעלות ברגליו"!')}
+                  </p>
+                ) : (
+                  <div className="mt-2 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>{t('incorrect', 'תשובה שגויה! נסה שנית.')}</span>
+                  </div>
+                )
               )}
             </div>
           </div>

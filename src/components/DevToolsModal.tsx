@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChapterId } from '../types';
-import { CHAPTERS_META } from '../data/chaptersData';
+import { getLocalizedChapters } from '../data/chaptersData';
 import { soundManager } from '../utils/audio';
 import { Wrench, CheckCircle, Sparkles, Coins, FastForward, Award, BookOpen, RefreshCw, X, Play, Lock, KeyRound } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -32,7 +32,8 @@ export const DevToolsModal: React.FC<DevToolsModalProps> = ({
   onUnlockAllBadges,
   onResetGame,
 }) => {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const chaptersMeta = getLocalizedChapters(language);
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [isUnlocked, setIsUnlocked] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -141,7 +142,7 @@ export const DevToolsModal: React.FC<DevToolsModalProps> = ({
                 <FastForward className="w-4 h-4 text-amber-700" /> {t('jumpChapters', 'דילוג ומעבר ישיר בין הפרקים')}
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {CHAPTERS_META.map((meta) => {
+                {chaptersMeta.map((meta) => {
                   const isCurrent = meta.id === currentChapter;
                   return (
                     <button

@@ -134,6 +134,8 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
   };
 
   const handleAnswerOilQuiz = (optIdx: number) => {
+    if (selectedOilOption === oilQuestion.correctOption) return;
+
     setSelectedOilOption(optIdx);
     setOilQuizAnswered(true);
 
@@ -333,20 +335,20 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
               <div className="space-y-1">
                 {oilQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedOilOption === optIdx;
-                  const isCorrectOpt = optIdx === oilQuestion.correctOption;
+                  const isOilCorrect = selectedOilOption === oilQuestion.correctOption;
 
                   return (
                     <button
                       key={optIdx}
-                      disabled={oilQuizAnswered}
+                      disabled={isOilCorrect}
                       onClick={() => handleAnswerOilQuiz(optIdx)}
                       className={`w-full p-1.5 rounded-xl text-xs font-bold text-right transition-all border ${
-                        oilQuizAnswered
-                          ? isCorrectOpt
+                        isOilCorrect
+                          ? isSelected
                             ? 'bg-emerald-100 border-emerald-600 text-emerald-900 font-black'
-                            : isSelected
-                            ? 'bg-rose-100 border-rose-600 text-rose-900'
                             : 'bg-white opacity-50 border-gray-300'
+                          : isSelected
+                          ? 'bg-rose-100 border-rose-600 text-rose-900 font-bold'
                           : 'bg-white border-[#D2B48C] hover:bg-[#FFD700] text-[#8B4513]'
                       }`}
                     >
@@ -357,9 +359,16 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
               </div>
 
               {oilQuizAnswered && (
-                <p className="text-[10px] text-[#5D4037] font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
-                  💡 לפי המשנה במסכת מנחות: 'זך' - כותש בראש הזית ואינו טוחן בריחיים, כדי שלא יהיה בו שמרים!
-                </p>
+                selectedOilOption === oilQuestion.correctOption ? (
+                  <p className="text-[10px] text-emerald-800 font-bold mt-1.5 pt-1 border-t border-[#D2B48C]">
+                    💡 לפי המשנה במסכת מנחות: 'זך' - כותש בראש הזית ואינו טוחן בריחיים, כדי שלא יהיה בו שמרים!
+                  </p>
+                ) : (
+                  <div className="mt-1.5 text-xs font-bold text-rose-800 bg-rose-100 p-2 rounded-xl border border-rose-300 flex items-center gap-1.5">
+                    <X className="w-4 h-4 text-rose-700" />
+                    <span>תשובה שגויה! נסה שנית.</span>
+                  </div>
+                )
               )}
             </div>
           </div>
