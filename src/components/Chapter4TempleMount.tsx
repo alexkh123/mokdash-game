@@ -4,6 +4,7 @@ import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { shuffleArray, shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_4_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -68,6 +69,7 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
   const [shekelFamilyCount, setShekelFamilyCount] = useState<number>(8); // 8 males
   const [selectedShekelAnswer, setSelectedShekelAnswer] = useState<number | null>(null);
   const [shekelSolved, setShekelSolved] = useState<boolean>(false);
+  const [shekelOptions] = useState(() => shuffleArray([2, 4, 8, 16]));
 
   // Task 2: Chamber of Wood Inspection
   const [logs, setLogs] = useState<{ id: string; clean: boolean; checked: boolean }[]>([
@@ -81,6 +83,15 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
   const [oilDrops, setOilDrops] = useState<number>(0);
   const [oilQuizAnswered, setOilQuizAnswered] = useState<boolean>(false);
   const [selectedOilOption, setSelectedOilOption] = useState<number | null>(null);
+  const [oilQuestion] = useState(() => shuffleQuestion({
+    question: '❓ מהו "שמן זית זך כתית למאור" לפי הלכות המקדש?',
+    options: [
+      'הטיפה הראשונה שיוצאת מהזית הכתוש במכתשת (ללא שחיקת ריחיים)',
+      'שמן שנסחט בריחיים אבן כבדים בתוספת מים',
+      'שמן זית שבישלו אותו באש גלויה',
+    ],
+    correctOption: 0,
+  }));
 
   const handleAnswerShekelCalc = (chosenOption: number) => {
     setSelectedShekelAnswer(chosenOption);
@@ -126,7 +137,7 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
     setSelectedOilOption(optIdx);
     setOilQuizAnswered(true);
 
-    if (optIdx === 0) {
+    if (optIdx === oilQuestion.correctOption) {
       soundManager.playCoin();
       onAddStars(10);
       if (oilDrops >= 5) {
@@ -190,7 +201,7 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-2 mb-3">
-              {[2, 4, 8, 16].map((num) => (
+              {shekelOptions.map((num) => (
                 <button
                   key={num}
                   disabled={shekelSolved}
@@ -316,17 +327,13 @@ export const Chapter4TempleMount: React.FC<Chapter4TempleMountProps> = ({
             {/* Oil Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-2.5 rounded-2xl shadow-sm">
               <p className="text-xs font-bold text-[#8B4513] mb-1.5 leading-tight">
-                ❓ מהו "שמן זית זך כתית למאור" לפי הלכות המקדש?
+                {oilQuestion.question}
               </p>
 
               <div className="space-y-1">
-                {[
-                  'הטיפה הראשונה שיוצאת מהזית הכתוש במכתשת (ללא שחיקת ריחיים)',
-                  'שמן שנסחט בריחיים אבן כבדים בתוספת מים',
-                  'שמן זית שבישלו אותו באש גלויה',
-                ].map((opt, optIdx) => {
+                {oilQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedOilOption === optIdx;
-                  const isCorrectOpt = optIdx === 0;
+                  const isCorrectOpt = optIdx === oilQuestion.correctOption;
 
                   return (
                     <button

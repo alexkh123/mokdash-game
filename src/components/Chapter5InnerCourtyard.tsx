@@ -4,6 +4,7 @@ import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_5_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -70,11 +71,29 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
   const [playedCymbals, setPlayedCymbals] = useState<boolean>(false);
   const [stairsQuizAnswered, setStairsQuizAnswered] = useState<boolean>(false);
   const [selectedStairsOption, setSelectedStairsOption] = useState<number | null>(null);
+  const [stairsQuestion] = useState(() => shuffleQuestion({
+    question: '❓ כמה מדרגות היו עולות מעזרת נשים לעזרת ישראל, וכנגד מה הן?',
+    options: [
+      '15 מדרגות - כנגד 15 שירי המעלות שבספר תהילים',
+      '10 מדרגות - כנגד עשרת הדיברות',
+      '12 מדרגות - כנגד שני עשר שבטי ישראל',
+    ],
+    correctOption: 0,
+  }));
 
   // Task 2: Altar Wood Assembly & Ma'aracha Quiz
   const [logsPlaced, setLogsPlaced] = useState<number>(0);
   const [altarQuizAnswered, setAltarQuizAnswered] = useState<boolean>(false);
   const [selectedAltarOption, setSelectedAltarOption] = useState<number | null>(null);
+  const [altarQuestion] = useState(() => shuffleQuestion({
+    question: '❓ כמה מערכות אש היו מסדרים על גבי המזבח הגדול בכל יום?',
+    options: [
+      'מערכה אחת בלבד לכל הקורבנות',
+      'שלוש מערכות אש: מערכה גדולה, מערכה לקטורת, ומערכה לקיום האש',
+      'שבע מערכות אש כנגד שבעת ימי השבוע',
+    ],
+    correctOption: 1,
+  }));
 
   const handlePlayInstrument = (type: 'harp' | 'lyre' | 'cymbals') => {
     if (type === 'harp') {
@@ -113,7 +132,7 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
     setSelectedStairsOption(optIdx);
     setStairsQuizAnswered(true);
 
-    if (optIdx === 0) {
+    if (optIdx === stairsQuestion.correctOption) {
       soundManager.playCoin();
       onAddStars(10);
       if (playedHarp && playedLyre && playedCymbals) {
@@ -142,7 +161,7 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
     setSelectedAltarOption(optIdx);
     setAltarQuizAnswered(true);
 
-    if (optIdx === 1) {
+    if (optIdx === altarQuestion.correctOption) {
       soundManager.playCoin();
       onAddStars(10);
       if (logsPlaced >= 4) {
@@ -239,17 +258,13 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
             {/* Stairs Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-2.5 rounded-2xl shadow-sm">
               <p className="text-xs font-bold text-[#8B4513] mb-1.5 leading-tight">
-                ❓ כמה מדרגות היו עולות מעזרת נשים לעזרת ישראל, וכנגד מה הן?
+                {stairsQuestion.question}
               </p>
 
               <div className="space-y-1">
-                {[
-                  '15 מדרגות - כנגד 15 שירי המעלות שבספר תהילים',
-                  '10 מדרגות - כנגד עשרת הדיברות',
-                  '12 מדרגות - כנגד שני עשר שבטי ישראל',
-                ].map((opt, optIdx) => {
+                {stairsQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedStairsOption === optIdx;
-                  const isCorrectOpt = optIdx === 0;
+                  const isCorrectOpt = optIdx === stairsQuestion.correctOption;
 
                   return (
                     <button
@@ -323,17 +338,13 @@ export const Chapter5InnerCourtyard: React.FC<Chapter5InnerCourtyardProps> = ({
             {/* Altar Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-2.5 rounded-2xl shadow-sm">
               <p className="text-xs font-bold text-[#8B4513] mb-1.5 leading-tight">
-                ❓ כמה מערכות אש היו מסדרים על גבי המזבח הגדול בכל יום?
+                {altarQuestion.question}
               </p>
 
               <div className="space-y-1">
-                {[
-                  'מערכה אחת בלבד לכל הקורבנות',
-                  'שלוש מערכות אש: מערכה גדולה, מערכה לקטורת, ומערכה לקיום האש',
-                  'שבע מערכות אש כנגד שבעת ימי השבוע',
-                ].map((opt, optIdx) => {
+                {altarQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedAltarOption === optIdx;
-                  const isCorrectOpt = optIdx === 1;
+                  const isCorrectOpt = optIdx === altarQuestion.correctOption;
 
                   return (
                     <button

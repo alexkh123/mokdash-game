@@ -4,6 +4,7 @@ import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_6_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -68,16 +69,34 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
   const [semichahProgress, setSemichahProgress] = useState<number>(0);
   const [semichahQuizAnswered, setSemichahQuizAnswered] = useState<boolean>(false);
   const [selectedSemichahOption, setSelectedSemichahOption] = useState<number | null>(null);
+  const [semichahQuestion] = useState(() => shuffleQuestion({
+    question: '❓ כיצד מתקיימת מצוות סמיכה על הקורבן כהלכתה?',
+    options: [
+      'בשתי הידיים בכל כוחו על ראש הבהמה בעזרה',
+      'ביד אחת בלבד וללא הנחת משקל',
+      'על גבי גב הבהמה ולא על הראש',
+    ],
+    correctOption: 0,
+  }));
 
   // Task 2: Sacrificial Service Step Sequence
   const [priestSequence, setPriestSequence] = useState<string[]>([]);
   const CORRECT_SEQUENCE = ['שחיטה', 'קבלה', 'הולכה', 'זריקה', 'הקטרה'];
-  const SEQUENCE_OPTIONS = ['זריקה', 'שחיטה', 'הקטרה', 'קבלה', 'הולכה'];
+  const [SEQUENCE_OPTIONS] = useState(() => shuffleQuestion({ question: '', options: ['זריקה', 'שחיטה', 'הקטרה', 'קבלה', 'הולכה'], correctOption: 0 }).options);
 
   // Task 3: Simchat HeChag Quiz
   const [simchahQuizAnswered, setSimchahQuizAnswered] = useState<boolean>(false);
   const [selectedSimchahOption, setSelectedSimchahOption] = useState<number | null>(null);
   const [celebrationStarted, setCelebrationStarted] = useState<boolean>(false);
+  const [simchahQuestion] = useState(() => shuffleQuestion({
+    question: '❓ באיזה אירוע מיוחד במקדש היו החסידים ואנשי מעשה מרקדים בלפידי אש?',
+    options: [
+      'שמחת בית השואבה בחג הסוכות',
+      'שמחת הביכורים בחג השבועות',
+      'שמחת הקרבת הפסח בחג המצות',
+    ],
+    correctOption: 0,
+  }));
 
   const handleHoldSemichah = () => {
     soundManager.playClick();
@@ -100,7 +119,7 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
     setSelectedSemichahOption(optIdx);
     setSemichahQuizAnswered(true);
 
-    if (optIdx === 0) {
+    if (optIdx === semichahQuestion.correctOption) {
       soundManager.playCoin();
       onAddStars(10);
       if (semichahProgress >= 100) {
@@ -140,7 +159,7 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
     setSelectedSimchahOption(optIdx);
     setSimchahQuizAnswered(true);
 
-    if (optIdx === 0) {
+    if (optIdx === simchahQuestion.correctOption) {
       soundManager.playCoin();
       onAddStars(10);
     } else {
@@ -208,17 +227,13 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
             {/* Semichah Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-2.5 rounded-2xl shadow-sm">
               <p className="text-xs font-bold text-[#8B4513] mb-1.5 leading-tight">
-                ❓ כיצד מתקיימת מצוות סמיכה על הקורבן כהלכתה?
+                {semichahQuestion.question}
               </p>
 
               <div className="space-y-1">
-                {[
-                  'בשתי הידיים בכל כוחו על ראש הבהמה בעזרה',
-                  'ביד אחת בלבד וללא הנחת משקל',
-                  'על גבי גב הבהמה ולא על הראש',
-                ].map((opt, optIdx) => {
+                {semichahQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedSemichahOption === optIdx;
-                  const isCorrectOpt = optIdx === 0;
+                  const isCorrectOpt = optIdx === semichahQuestion.correctOption;
 
                   return (
                     <button
@@ -353,17 +368,13 @@ export const Chapter6SacrificeJoy: React.FC<Chapter6SacrificeJoyProps> = ({
             {/* Simchah Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-2.5 rounded-2xl shadow-sm mb-3">
               <p className="text-xs font-bold text-[#8B4513] mb-1.5 leading-tight">
-                ❓ באיזה אירוע מיוחד במקדש היו החסידים ואנשי מעשה מרקדים בלפידי אש?
+                {simchahQuestion.question}
               </p>
 
               <div className="space-y-1">
-                {[
-                  'שמחת בית השואבה בחג הסוכות',
-                  'שמחת הביכורים בחג השבועות',
-                  'שמחת הקרבת הפסח בחג המצות',
-                ].map((opt, optIdx) => {
+                {simchahQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedSimchahOption === optIdx;
-                  const isCorrectOpt = optIdx === 0;
+                  const isCorrectOpt = optIdx === simchahQuestion.correctOption;
 
                   return (
                     <button

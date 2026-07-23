@@ -4,6 +4,7 @@ import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_2_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -74,10 +75,28 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
   const [sharedWater, setSharedWater] = useState<boolean>(false);
   const [demaiQuizAnswered, setDemaiQuizAnswered] = useState<boolean>(false);
   const [selectedDemaiOption, setSelectedDemaiOption] = useState<number | null>(null);
+  const [demaiQuestion] = useState(() => shuffleQuestion({
+    question: "❓ אתגר הלכה: כשמתארחים בפונדק דרכים אצל 'עם הארץ', מה חייבים לעשר מספק?",
+    options: [
+      'אינו צריך לעשר כלל כי הארח בחזקת כשרות',
+      'מעשר שני ותרומת מעשר בלבד (דין דמאי)',
+      'חייב להפריש תרומה גדולה בלבד',
+    ],
+    correctOption: 1,
+  }));
 
   // Pilgrimage Halakhot Overlook Trivia State
   const [overlookQuizAnswered, setOverlookQuizAnswered] = useState<boolean>(false);
   const [selectedOverlookOption, setSelectedOverlookOption] = useState<number | null>(null);
+  const [overlookQuestion] = useState(() => shuffleQuestion({
+    question: '❓ מי מהבאים פטור ממצוות "עולת ראייה" מן התורה?',
+    options: [
+      'חרש, שוטה, קטן, ומי שאינו יכול לעלות ברגליו',
+      'מי שאין לו קרקע בארץ ישראל בלבד',
+      'רק מי שעלה לרגל בשנה שעברה',
+    ],
+    correctOption: 0,
+  }));
 
   // Rhythm beat ticker
   useEffect(() => {
@@ -150,7 +169,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
     setSelectedDemaiOption(optIdx);
     setDemaiQuizAnswered(true);
 
-    if (optIdx === 1) {
+    if (optIdx === demaiQuestion.correctOption) {
       // Correct: Demai (מעשר שני ותרומת מעשר מספק)
       soundManager.playCoin();
       onAddStars(10);
@@ -166,7 +185,7 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
     setSelectedOverlookOption(optIdx);
     setOverlookQuizAnswered(true);
 
-    if (optIdx === 0) {
+    if (optIdx === overlookQuestion.correctOption) {
       // Correct: חרש, שוטה, קטן וסומא
       soundManager.playTrumpetFanfare();
       onAddStars(15);
@@ -317,17 +336,13 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
             {/* Demai Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-3 rounded-2xl shadow-sm">
               <p className="text-xs font-bold text-[#8B4513] mb-2 leading-tight">
-                ❓ אתגר הלכה: כשמתארחים בפונדק דרכים אצל 'עם הארץ', מה חייבים לעשר מספק?
+                {demaiQuestion.question}
               </p>
 
               <div className="space-y-1.5">
-                {[
-                  'אינו צריך לעשר כלל כי הארח בחזקת כשרות',
-                  'מעשר שני ותרומת מעשר בלבד (דין דמאי)',
-                  'חייב להפריש תרומה גדולה בלבד',
-                ].map((opt, optIdx) => {
+                {demaiQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedDemaiOption === optIdx;
-                  const isCorrectOpt = optIdx === 1;
+                  const isCorrectOpt = optIdx === demaiQuestion.correctOption;
 
                   return (
                     <button
@@ -388,17 +403,13 @@ export const Chapter2Road: React.FC<Chapter2RoadProps> = ({
             {/* Overlook Quiz Box */}
             <div className="bg-[#FDF6E3] border-2 border-[#8B4513] p-3 rounded-2xl shadow-sm mb-3">
               <p className="text-xs font-bold text-[#8B4513] mb-2 leading-tight">
-                ❓ מי מהבאים פטור ממצוות "עולת ראייה" מן התורה?
+                {overlookQuestion.question}
               </p>
 
               <div className="space-y-1.5">
-                {[
-                  'חרש, שוטה, קטן, ומי שאינו יכול לעלות ברגליו',
-                  'מי שאין לו קרקע בארץ ישראל בלבד',
-                  'רק מי שעלה לרגל בשנה שעברה',
-                ].map((opt, optIdx) => {
+                {overlookQuestion.options.map((opt, optIdx) => {
                   const isSelected = selectedOverlookOption === optIdx;
-                  const isCorrectOpt = optIdx === 0;
+                  const isCorrectOpt = optIdx === overlookQuestion.correctOption;
 
                   return (
                     <button

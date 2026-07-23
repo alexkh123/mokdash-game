@@ -39,6 +39,7 @@ const CHAPTER_TASKS_MAP: Record<ChapterId, string[]> = {
 
 export default function App() {
   const [currentChapter, setCurrentChapter] = useState<ChapterId>(1);
+  const [maxUnlockedChapter, setMaxUnlockedChapter] = useState<ChapterId>(1);
   const [coins, setCoins] = useState<number>(0);
   const [stars, setStars] = useState<number>(0);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
@@ -120,6 +121,7 @@ export default function App() {
     if (currentChapter < 6) {
       const nextCh = (currentChapter + 1) as ChapterId;
       setCurrentChapter(nextCh);
+      setMaxUnlockedChapter((prev) => Math.max(prev, nextCh) as ChapterId);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -134,6 +136,7 @@ export default function App() {
     if (currentChapter < 6) {
       const nextCh = (currentChapter + 1) as ChapterId;
       setCurrentChapter(nextCh);
+      setMaxUnlockedChapter((prev) => Math.max(prev, nextCh) as ChapterId);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       setIsCelebrating(true);
@@ -144,6 +147,7 @@ export default function App() {
     setCompletedTasks(ALL_GAME_TASKS);
     setBadges((prev) => prev.map((b) => ({ ...b, unlocked: true })));
     setCodex((prev) => prev.map((t) => ({ ...t, unlocked: true })));
+    setMaxUnlockedChapter(6);
     setIsCelebrating(true);
   };
 
@@ -157,6 +161,7 @@ export default function App() {
 
   const handleResetGame = () => {
     setCurrentChapter(1);
+    setMaxUnlockedChapter(1);
     setCoins(0);
     setStars(0);
     setCompletedTasks([]);
@@ -173,6 +178,7 @@ export default function App() {
       {/* Sticky Top Header */}
       <Header
         currentChapter={currentChapter}
+        maxUnlockedChapter={maxUnlockedChapter}
         stars={stars}
         coins={coins}
         soundEnabled={soundEnabled}
@@ -181,7 +187,10 @@ export default function App() {
         onOpenCodex={() => setIsCodexOpen(true)}
         onOpenBadges={() => setIsBadgesOpen(true)}
         onOpenDevTools={() => setIsDevToolsOpen(true)}
-        onSelectChapter={(id) => setCurrentChapter(id)}
+        onSelectChapter={(id) => {
+          setCurrentChapter(id);
+          setMaxUnlockedChapter((prev) => Math.max(prev, id) as ChapterId);
+        }}
       />
 
       {/* Main Game Stage Container */}
@@ -204,13 +213,15 @@ export default function App() {
               </div>
               
               {/* Quick Dev Mode Skip Button */}
-              <button
-                onClick={() => handleCompleteCurrentChapter()}
-                className="text-[11px] bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition-all"
-                title="השלם משימות פרק זה ודלג לפרק הבא"
-              >
-                <span>🛠️ השלם ודלג פרק</span>
-              </button>
+              {import.meta.env.DEV && (
+                <button
+                  onClick={() => handleCompleteCurrentChapter()}
+                  className="text-[11px] bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1 rounded-lg font-bold flex items-center gap-1 shadow-sm transition-all"
+                  title="השלם משימות פרק זה ודלג לפרק הבא"
+                >
+                  <span>🛠️ השלם ודלג פרק</span>
+                </button>
+              )}
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[#8B4513] font-heading mb-1">
               {currentMeta.subTitle}

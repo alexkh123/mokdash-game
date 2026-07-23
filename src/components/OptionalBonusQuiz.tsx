@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { HelpCircle, Sparkles, Check, X, Award, BookOpen } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { useLanguage } from '../context/LanguageContext';
+import { shuffleQuestion } from '../utils/shuffle';
 
 export interface BonusQuestion {
   id: string;
@@ -30,10 +31,14 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
   const [bonusCoinsEarned, setBonusCoinsEarned] = useState<number>(0);
   const [bonusStarsEarned, setBonusStarsEarned] = useState<number>(0);
 
+  const shuffledQuestions = useMemo(() => {
+    return questions.map((q) => shuffleQuestion(q));
+  }, [questions]);
+
   const handleAnswerQuestion = (qId: string, optionIdx: number) => {
     if (answeredState[qId] !== undefined) return;
 
-    const question = questions.find((q) => q.id === qId);
+    const question = shuffledQuestions.find((q) => q.id === qId);
     if (!question) return;
 
     const isCorrect = optionIdx === question.correctOption;
@@ -88,7 +93,7 @@ export const OptionalBonusQuiz: React.FC<OptionalBonusQuizProps> = ({
 
       {/* Questions List */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {questions.map((q, idx) => {
+        {shuffledQuestions.map((q, idx) => {
           const isAnswered = answeredState[q.id] !== undefined;
           const selectedOption = answeredState[q.id];
           const isCorrect = isAnswered && selectedOption === q.correctOption;

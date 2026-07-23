@@ -4,6 +4,7 @@ import { soundManager } from '../utils/audio';
 import { OptionalBonusQuiz, BonusQuestion } from './OptionalBonusQuiz';
 import { useLanguage } from '../context/LanguageContext';
 import { getChapterContent } from '../data/localizedChapterContent';
+import { shuffleArray, shuffleQuestion } from '../utils/shuffle';
 
 const CHAPTER_1_BONUS_QUESTIONS: BonusQuestion[] = [
   {
@@ -75,7 +76,7 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
   const [selectedCalcAnswer, setSelectedCalcAnswer] = useState<number | null>(null);
   const [calcFeedback, setCalcFeedback] = useState<{ isCorrect: boolean; text: string } | null>(null);
 
-  const CALC_PROBLEMS = [
+  const [CALC_PROBLEMS] = useState(() => [
     {
       id: 1,
       fruitName: 'סל תאנים מתוקות',
@@ -83,7 +84,7 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       baseValue: 40,
       chomesh: 10,
       correctTotal: 50,
-      options: [40, 48, 50, 60],
+      options: shuffleArray([40, 48, 50, 60]),
       explanation: 'ערך הפירות 40 מטבעות. לפי ההלכה, הפודה מעשר שני מוסיף חומש (+25% מתחילה / +1/5 בסך הכל) = 40 + 10 = 50 מטבעות!',
     },
     {
@@ -93,7 +94,7 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       baseValue: 80,
       chomesh: 20,
       correctTotal: 100,
-      options: [80, 90, 100, 120],
+      options: shuffleArray([80, 90, 100, 120]),
       explanation: 'ערך הפירות 80 מטבעות. תוספת חומש היא 20 מטבעות, ולכן סך הפדיון במטבעות כסף הוא 100 מטבעות!',
     },
     {
@@ -103,31 +104,31 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       baseValue: 20,
       chomesh: 5,
       correctTotal: 25,
-      options: [20, 24, 25, 30],
+      options: shuffleArray([20, 24, 25, 30]),
       explanation: 'ערך השמן 20 מטבעות. תוספת חומש (רבע מהמקור) היא 5 מטבעות, סך הכל 25 מטבעות כסף!',
     },
-  ];
+  ]);
 
   // Task 2: Sacrificial Laws Quiz
   const [quizAnswered, setQuizAnswered] = useState<{ [key: number]: number }>({});
   const [quizScore, setQuizScore] = useState<number>(0);
 
-  const SACRIFICE_QUIZ = [
-    {
+  const [SACRIFICE_QUIZ] = useState(() => [
+    shuffleQuestion({
       id: 1,
       question: 'איזה קורבן מעולות החג נשרף כליל על גבי המזבח ואינו נאכל כלל?',
       options: ['עולת ראייה', 'שלמי חגיגה', 'שלמי שמחה', 'מעשר בהמה'],
       correctOption: 0,
       explanation: 'עולת ראייה מוקרבת כליל לה\' על גבי המזבח ואינה נאכלת לבעלים.',
-    },
-    {
+    }),
+    shuffleQuestion({
       id: 2,
       question: 'מאיזה כסף מותר לקנות בהמות לשלמי שמחה בירושלים?',
       options: ['כספי מעשר שני שנפדו', 'כספי מחצית השקל', 'כספי ערכין בלבד', 'כל כסף שאינו קודש'],
       correctOption: 0,
       explanation: 'מותר ואף מצווה לקנות בהמות לשלמי שמחה מכספי מעשר שני שנפדו!',
-    },
-  ];
+    }),
+  ]);
 
   // Task 3: Packing Backpack & Halakhic Prerequisites
   interface PackingItem {
@@ -142,8 +143,8 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
     explanation: string;
   }
 
-  const [packedGear, setPackedGear] = useState<PackingItem[]>([
-    {
+  const [packedGear, setPackedGear] = useState<PackingItem[]>(() => [
+    shuffleQuestion({
       id: 'water',
       name: 'מימיית מים צוננים',
       icon: '🥤',
@@ -157,8 +158,8 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       ],
       correctOption: 0,
       explanation: 'התורה ציוותה אותנו "ונשמרתם מאוד לנפשותיכם" - שמירת בריאות הגוף בעלייה לרגל היא חלק מעבודת השם!',
-    },
-    {
+    }),
+    shuffleQuestion({
       id: 'garments',
       name: 'בגדי חג לבנים וטהורים',
       icon: '👔',
@@ -172,8 +173,8 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       ],
       correctOption: 0,
       explanation: 'נאמר "וכבסו שמלותם" - הופעה נקייה ומכובדת בבגדי חג לבנים היא מצווה לכבוד המקדש והשכינה.',
-    },
-    {
+    }),
+    shuffleQuestion({
       id: 'sandals',
       name: 'סנדלי הליכה (ליציאה מהר הבית)',
       icon: '🥾',
@@ -187,8 +188,8 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       ],
       correctOption: 0,
       explanation: 'נאמר "של נעליך מעל רגליך" - להר הבית נכנסים יחפים או במנעל שאינו של עור משום כבוד המקדש!',
-    },
-    {
+    }),
+    shuffleQuestion({
       id: 'purse',
       name: 'צרור מטבעות מעשר שני',
       icon: '💰',
@@ -202,7 +203,7 @@ export const Chapter1Home: React.FC<Chapter1HomeProps> = ({
       ],
       correctOption: 0,
       explanation: 'מעשר שני נועד להיאכל בשמחה ובטהרה בירושלים כדי להרבות שמחה ולימוד תורה בעיר הקודש!',
-    },
+    }),
   ]);
 
   const [activePackQuestionId, setActivePackQuestionId] = useState<string | null>(null);

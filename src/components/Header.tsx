@@ -7,6 +7,7 @@ import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 
 interface HeaderProps {
   currentChapter: ChapterId;
+  maxUnlockedChapter?: ChapterId;
   stars: number;
   coins: number;
   soundEnabled: boolean;
@@ -20,6 +21,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   currentChapter,
+  maxUnlockedChapter = 1,
   stars,
   coins,
   soundEnabled,
@@ -74,10 +76,15 @@ export const Header: React.FC<HeaderProps> = ({
           {localizedChapters.map((meta) => {
             const isActive = meta.id === currentChapter;
             const isPassed = meta.id < currentChapter;
+            const isUnlocked = meta.id <= maxUnlockedChapter;
+            const canSelect = import.meta.env.DEV || isUnlocked;
+
             return (
               <button
                 key={meta.id}
+                disabled={!canSelect}
                 onClick={() => {
+                  if (!canSelect) return;
                   soundManager.playClick();
                   onSelectChapter(meta.id);
                 }}
@@ -86,14 +93,16 @@ export const Header: React.FC<HeaderProps> = ({
                     ? 'bg-[#8B4513] text-white shadow-md border-2 border-[#8B4513] scale-105'
                     : isPassed
                     ? 'bg-[#FFF9E5] text-[#8B4513] hover:bg-[#FFD700] border-2 border-[#D2B48C]'
-                    : 'bg-[#FDF6E3] text-[#8B4513]/50 hover:bg-[#FFF9E5] border-2 border-[#D2B48C]/50'
+                    : canSelect
+                    ? 'bg-[#FDF6E3] text-[#8B4513]/80 hover:bg-[#FFF9E5] border-2 border-[#D2B48C]'
+                    : 'bg-[#FDF6E3]/50 text-[#8B4513]/30 border-2 border-[#D2B48C]/30 cursor-not-allowed opacity-60'
                 }`}
-                title={meta.title}
+                title={canSelect ? meta.title : `${meta.title} (${t('lockedChapter', 'נעול')})`}
               >
                 <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-black ${
-                  isActive ? 'bg-[#FFD700] text-[#8B4513]' : isPassed ? 'bg-[#8B4513] text-white' : 'bg-[#D2B48C] text-[#8B4513]'
+                  isActive ? 'bg-[#FFD700] text-[#8B4513]' : isPassed ? 'bg-[#8B4513] text-white' : canSelect ? 'bg-[#D2B48C] text-[#8B4513]' : 'bg-gray-300 text-gray-500'
                 }`}>
-                  {meta.id}
+                  {canSelect ? meta.id : '🔒'}
                 </span>
                 <span className="hidden lg:inline">{meta.subTitle}</span>
               </button>
@@ -199,17 +208,19 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           {/* Dev Mode Button */}
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onOpenDevTools();
-            }}
-            className="flex items-center gap-1.5 bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl text-xs font-bold border-2 border-[#8B4513] shadow-sm transition-all active:translate-y-0.5"
-            title="מצב פיתוח ודילוג בין שלבים"
-          >
-            <Wrench className="w-4 h-4 text-[#FFD700]" />
-            <span className="hidden sm:inline">פיתוח</span>
-          </button>
+          {import.meta.env.DEV && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenDevTools();
+              }}
+              className="flex items-center gap-1.5 bg-[#8B4513] hover:bg-[#5D4037] text-white px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl text-xs font-bold border-2 border-[#8B4513] shadow-sm transition-all active:translate-y-0.5"
+              title="מצב פיתוח ודילוג בין שלבים"
+            >
+              <Wrench className="w-4 h-4 text-[#FFD700]" />
+              <span className="hidden sm:inline">פיתוח</span>
+            </button>
+          )}
 
           {/* Audio Toggle */}
           <button
